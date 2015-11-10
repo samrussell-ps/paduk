@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+  - 2.2.3
+before_script:
+  - rake db:drop
+  - rake db:setup
+script:
+  - rspec spec
+bundler_args: --without production
+addons:
+  code_climate:
+    repo_token: 5ad2524dc8a191c3ae6513ddd1a39ecc47139c4169a3e9f043587be7e29ccc9c
