@@ -4,6 +4,10 @@
 }
 empty_square = "\xE2\x97\xBB"
 %>
+<div>
+  Last move by: <%= @stones.last.color if @stones.present? %>
+  </div>
+  <div>
 <table style="border: 1px solid black;">
   <% Stone::NUMBER_OF_ROWS.times do |row_number| %>
     <tr>
@@ -25,3 +29,5 @@ empty_square = "\xE2\x97\xBB"
   <li><%= stone.row %>, <%= stone.column %>, <%= stone.color %></li>
 <% end %>
 </ol>
+
+</div>
