@@ -1,9 +1,10 @@
 require 'set'
 
 class ConnectedStones
-  def initialize(row, column)
+  def initialize(row, column, color)
     @row = row
     @column = column
+    @color = color
   end
 
   def call
@@ -13,7 +14,7 @@ class ConnectedStones
   private
 
   def flood_fill(coordinate, visited_coordinates)
-    if coordinate_is_valid?(coordinate) && visited_coordinates.exclude?(coordinate) && Stone.where(row: coordinate[0], column: coordinate[1]).present?
+    if coordinate_is_valid?(coordinate) && visited_coordinates.exclude?(coordinate) && Stone.where(row: coordinate[0], column: coordinate[1], color: @color).present?
       visited_coordinates << coordinate
 
       [:north, :east, :south, :west].each do |direction|

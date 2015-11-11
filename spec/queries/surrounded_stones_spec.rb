@@ -79,6 +79,7 @@ describe SurroundedStones do
 
   before do
     colors = %w(none black white)
+
     locations_to_coordinates(stone_locations).each do |coordinate|
       color = colors[stone_locations[coordinate[0]][coordinate[1]]]
       Stone.create!(row: coordinate[0], column: coordinate[1], color: color)

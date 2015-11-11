@@ -1,7 +1,8 @@
 class SurroundedStones
   def call
     Stone.all.map do |stone|
-      if surrounded?(stone)
+      connected_stones = ConnectedStones.new(stone.row, stone.column, stone.color).call
+      if connected_stones.all? { |coordinate| surrounded?(coordinate) }
         [stone.row, stone.column]
       end
     end.compact
@@ -9,11 +10,11 @@ class SurroundedStones
 
   private
 
-  def surrounded?(stone)
+  def surrounded?(coordinate)
     [:north, :east, :south, :west].all? do |direction|
-      coordinate = move(direction, [stone.row, stone.column])
-      stone_at_coordinate = Stone.where(row: coordinate[0], column: coordinate[1]).first
-      !coordinate_is_valid?(coordinate) || (stone_at_coordinate.present? && stone_at_coordinate.color != stone.color)
+      test_coordinate = move(direction, coordinate)
+      stone_at_coordinate = Stone.where(row: test_coordinate[0], column: test_coordinate[1]).first
+      !coordinate_is_valid?(test_coordinate) || (stone_at_coordinate.present?)
     end
   end
 
