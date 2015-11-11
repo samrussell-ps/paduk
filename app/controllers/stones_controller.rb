@@ -1,5 +1,5 @@
 class StonesController < ApplicationController
   def create
-    Stone.create!(row: params[:row], column: params[:column])
+    PlaceStone.new(params[:row], params[:column]).call
   end
 end
