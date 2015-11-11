@@ -1,6 +1,13 @@
 class StonesController < ApplicationController
+  OTHER_COLOR = { 'black' => 'white',
+    'white' => 'black'
+  }
   def create
-    PlaceStone.new(params[:row], params[:column]).call
+    Stone.transaction do
+      PlaceStone.new(params[:row], params[:column]).call
+
+      RemoveSurroundedStones.new(OTHER_COLOR[Stone.last.color]).call
+    end
 
     redirect_to stones_url
   end

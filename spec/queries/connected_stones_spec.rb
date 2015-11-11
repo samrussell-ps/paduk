@@ -2,6 +2,7 @@ require 'rails_helper'
 require 'set'
 
 describe ConnectedStones do
+  # todo DRY
   def locations_to_coordinates(locations)
     coordinates = Set.new
 
