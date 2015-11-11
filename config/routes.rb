@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   
   resources :stones, only: [:create, :index, :new, :destroy]
 
+  root 'stones#index'
+
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
 
