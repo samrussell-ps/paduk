@@ -14,6 +14,7 @@ class PlaceStone
               else
                 COLORS.first
               end
+
       Stone.create!(row: @row, column: @column, color: color)
     end
   end

@@ -25,6 +25,7 @@ class ConnectedStones
     visited_coordinates 
   end
 
+  # TODO DRY
   def coordinate_is_valid?(coordinate)
     coordinate && (0...Stone::NUMBER_OF_ROWS).include?(coordinate[0]) && (0...Stone::NUMBER_OF_COLUMNS).include?(coordinate[1])
   end
