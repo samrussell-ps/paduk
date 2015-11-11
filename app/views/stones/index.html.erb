@@ -9,7 +9,7 @@
       <% columns.times do |column_number| %>
         <td style="border: 1px solid black;">
           <% @stones.where(row: row_number, column: column_number).each do |stone| %>
-            <%= circles[stone.color] %>
+            <%= link_to circles[stone.color], stone_path(stone.id), method: :delete %>
           <% end %>
           <% if @stones.where(row: row_number, column: column_number).empty? %>
             <%= "\xE2\x97\xBB" %>

@@ -11,4 +11,11 @@ class StonesController < ApplicationController
 
   def new
   end
+
+  def destroy
+    puts "destroying stone with id #{params[:id]}"
+    Stone.find(params[:id]).destroy!
+
+    redirect_to stones_url
+  end
 end

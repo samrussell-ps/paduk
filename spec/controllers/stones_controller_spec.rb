@@ -28,4 +28,20 @@ RSpec.describe StonesController, type: :controller do
       expect(response.status).to eq(200)
     end
   end
+
+  describe '#destroy' do
+    it 'tries to destroy the Stone with the id that is passed' do
+      stone = Stone.create!(row: "3", column: "7", color: "black")
+
+      expect { delete :destroy, id: stone.id }.to change { Stone.count }.by(-1)
+    end
+      
+    it 'redirects to the index' do
+      stone = Stone.create!(row: "3", column: "7", color: "black")
+
+      delete :destroy, id: stone.id
+
+      expect(response).to redirect_to stones_url
+    end
+  end
 end
