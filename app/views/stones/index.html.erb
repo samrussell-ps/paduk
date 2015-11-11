@@ -1,3 +1,24 @@
+<% circles = { 'black' => "\xE2\x9A\xAB",
+  'white' => "\xE2\x9A\xAA"
+} %>
+<table style="border: 1px solid black;">
+  <% rows = 19 %>
+  <% columns = 19 %>
+  <% rows.times do |row_number| %>
+    <tr>
+      <% columns.times do |column_number| %>
+        <td style="border: 1px solid black;">
+          <% @stones.where(row: row_number, column: column_number).each do |stone| %>
+            <%= circles[stone.color] %>
+          <% end %>
+          <% if @stones.where(row: row_number, column: column_number).empty? %>
+            <%= "\xE2\x97\xBB" %>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
 <ol>
 <% @stones.each do |stone| %>
   <li><%= stone.row %>, <%= stone.column %>, <%= stone.color %></li>
