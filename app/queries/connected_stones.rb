@@ -13,7 +13,7 @@ class ConnectedStones
   private
 
   def flood_fill(coordinate, visited_coordinates)
-    if coordinate && visited_coordinates.exclude?(coordinate) && Stone.where(row: coordinate[0], column: coordinate[1]).present?
+    if coordinate_is_valid?(coordinate) && visited_coordinates.exclude?(coordinate) && Stone.where(row: coordinate[0], column: coordinate[1]).present?
       visited_coordinates << coordinate
 
       [:north, :east, :south, :west].each do |direction|
@@ -22,6 +22,10 @@ class ConnectedStones
     end
 
     visited_coordinates 
+  end
+
+  def coordinate_is_valid?(coordinate)
+    coordinate && (0...Stone::NUMBER_OF_ROWS).include?(coordinate[0]) && (0...Stone::NUMBER_OF_COLUMNS).include?(coordinate[1])
   end
 
   def move(direction, coordinate)

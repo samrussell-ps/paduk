@@ -7,7 +7,7 @@ describe ConnectedStones do
 
     locations.each_with_index do |row, row_number|
       row.each_with_index do |cell, column_number|
-        if cell == 1
+        if cell > 0
           coordinates.add([row_number, column_number])
         end
       end
