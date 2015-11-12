@@ -7,7 +7,7 @@ describe SurroundedStones do
     locations.each_with_index do |row, row_number|
       row.each_with_index do |cell, column_number|
         if cell > 0
-          coordinates.add([row_number, column_number])
+          coordinates.add(Coordinate.new(row: row_number, column: column_number))
         end
       end
     end
@@ -81,8 +81,8 @@ describe SurroundedStones do
     colors = %w(none black white)
 
     locations_to_coordinates(stone_locations).each do |coordinate|
-      color = colors[stone_locations[coordinate[0]][coordinate[1]]]
-      Stone.create!(row: coordinate[0], column: coordinate[1], color: color)
+      color = colors[stone_locations[coordinate.row][coordinate.column]]
+      Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
     end
   end
 

@@ -9,7 +9,7 @@ describe ConnectedStones do
     locations.each_with_index do |row, row_number|
       row.each_with_index do |cell, column_number|
         if cell > 0
-          coordinates.add([row_number, column_number])
+          coordinates.add(Coordinate.new(row: row_number, column: column_number))
         end
       end
     end
@@ -89,8 +89,8 @@ describe ConnectedStones do
       colors = %w(none black white)
 
       locations_to_coordinates(stone_locations).each do |coordinate|
-        color = colors[stone_locations[coordinate[0]][coordinate[1]]]
-        Stone.create!(row: coordinate[0], column: coordinate[1], color: color)
+        color = colors[stone_locations[coordinate.row][coordinate.column]]
+        Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
       end
     end
 
@@ -99,12 +99,12 @@ describe ConnectedStones do
       easy_coordinates3 = locations_to_coordinates(connected_stones3)
 
       easy_coordinates2.each do |coordinate|
-        connected_stones = ConnectedStones.new(coordinate[0], coordinate[1], 'black').call
+        connected_stones = ConnectedStones.new(coordinate, 'black').call
         expect(connected_stones).to contain_exactly(*easy_coordinates2)
       end
 
       easy_coordinates3.each do |coordinate|
-        connected_stones = ConnectedStones.new(coordinate[0], coordinate[1], 'black').call
+        connected_stones = ConnectedStones.new(coordinate, 'black').call
         expect(connected_stones).to contain_exactly(*easy_coordinates3)
       end
     end
@@ -113,7 +113,7 @@ describe ConnectedStones do
       hard_coordinates = locations_to_coordinates(connected_stones1)
 
       hard_coordinates.each do |coordinate|
-        connected_stones = ConnectedStones.new(coordinate[0], coordinate[1], 'black').call
+        connected_stones = ConnectedStones.new(coordinate, 'black').call
         expect(connected_stones).to contain_exactly(*hard_coordinates)
       end
     end
@@ -124,8 +124,8 @@ describe ConnectedStones do
       colors = %w(none black white)
 
       locations_to_coordinates(multicolor_stone_locations).each do |coordinate|
-        color = colors[multicolor_stone_locations[coordinate[0]][coordinate[1]]]
-        Stone.create!(row: coordinate[0], column: coordinate[1], color: color)
+        color = colors[multicolor_stone_locations[coordinate.row][coordinate.column]]
+        Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
       end
     end
 
@@ -133,7 +133,7 @@ describe ConnectedStones do
       multicolor_coordinates1 = locations_to_coordinates(multicolor_connected_stones1)
 
       multicolor_coordinates1.each do |coordinate|
-        connected_stones = ConnectedStones.new(coordinate[0], coordinate[1], 'black').call
+        connected_stones = ConnectedStones.new(coordinate, 'black').call
         expect(connected_stones).to contain_exactly(*multicolor_coordinates1)
       end
     end

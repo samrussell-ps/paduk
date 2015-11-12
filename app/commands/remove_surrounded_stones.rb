@@ -5,7 +5,7 @@ class RemoveSurroundedStones
 
   def call
     SurroundedStones.new.call.each do |coordinate|
-      stone_to_remove = Stone.where(row: coordinate[0], column: coordinate[1]).first
+      stone_to_remove = Stone.where(row: coordinate.row, column: coordinate.column).first
 
       stone_to_remove.destroy! if stone_to_remove.color == @color
     end
