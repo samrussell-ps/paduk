@@ -9,14 +9,43 @@ class CreateTurn
   end
 
   def call
-    turn = Turn.create!(color: next_color)
+    find_errors
 
-    turn.stone_additions.create!(row: @coordinate.row, column: @coordinate.column) if @coordinate
+    if @errors.empty?
+      turn = Turn.create!(color: next_color)
 
-    turn.valid?
+      turn.stone_additions.create!(row: @coordinate.row, column: @coordinate.column) if @coordinate
+
+      if @coordinate
+        surrounded_coordinates.each do |coordinate|
+          turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
+        end
+      end
+    end
+
+    @errors.empty?
   end
 
   private
+
+  def surrounded_coordinates
+    @coordinate.neighbors.select do |neighbor|
+      stones = Stone.where(row: neighbor.row, column: neighbor.column)
+      LibertiesCount.new(neighbor, stones.first.color).call == 1 if stones.present?
+    end
+  end
+
+  def find_errors
+    @errors = []
+
+    if @coordinate
+      @errors << :stone_at_coordinate if stone_at_coordinate?
+    end
+  end
+
+  def stone_at_coordinate?
+    Stone.where(row: @coordinate.row, column: @coordinate.column).present?
+  end
 
   def next_color
     if Turn.last
