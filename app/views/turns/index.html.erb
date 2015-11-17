@@ -9,9 +9,9 @@ empty_square = "\xE2\x97\xBB"
   </div>
   <div>
 <table style="border: 1px solid black;">
-  <% Stone::NUMBER_OF_ROWS.times do |row_number| %>
+  <% Board::NUMBER_OF_ROWS.times do |row_number| %>
     <tr>
-      <% Stone::NUMBER_OF_COLUMNS.times do |column_number| %>
+      <% Board::NUMBER_OF_COLUMNS.times do |column_number| %>
         <td style="border: 1px solid black;">
           <% color = @board.square(Coordinate.new(row: row_number, column: column_number)) %>
           <% if color %>

@@ -18,7 +18,7 @@ class Coordinate
   end
 
   def valid?
-    (0...Stone::NUMBER_OF_ROWS).include?(@row) && (0...Stone::NUMBER_OF_COLUMNS).include?(@column)
+    (0...Board::NUMBER_OF_ROWS).include?(@row) && (0...Board::NUMBER_OF_COLUMNS).include?(@column)
   end
 
   def hash
