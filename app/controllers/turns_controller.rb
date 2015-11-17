@@ -1,17 +1,18 @@
 class TurnsController < ApplicationController
   def index
-    @turns = Turn.all
+    @next_color = NextColor.new.call
+
+    jump_to_turn
   end
 
   def create
-    board = Board.new
-    # needs to be in order
-    Turn.all.each do |turn|
-      ApplyTurn.new(turn, board).call
-    end
-    CreateTurn.new(Coordinate.new(row: params[:row].to_i, column: params[:column].to_i), board).call
+    jump_to_turn
 
-    ApplyTurn.new(Turn.last, board).call
+    next_piece_coordinate = Coordinate.new(row: params[:row].to_i, column: params[:column].to_i)
+
+    if CreateTurn.new(next_piece_coordinate, @board).call
+      ApplyTurn.new(Turn.last, @board).call
+    end
 
     redirect_to turns_url
   end
@@ -23,5 +24,16 @@ class TurnsController < ApplicationController
   def show
     puts params[:id]
     @turns = Turn.where('id <= ?', params[:id])
+  end
+
+  private
+
+  def jump_to_turn(turn_id = nil)
+    @turns = turn_id ? Turn.where('id <= ?', params[:id]).order(:id) : Turn.all.order(:id)
+    @board = Board.new
+
+    Turn.all.each do |turn|
+      ApplyTurn.new(turn, @board).call
+    end
   end
 end

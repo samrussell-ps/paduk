@@ -1,6 +1,7 @@
 class Board
   def initialize
     @squares = {}
+    @last_move = nil
   end
 
   def square(coordinate)

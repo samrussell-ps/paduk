@@ -12,28 +12,44 @@ class CreateTurn
   def call
     find_errors
 
-    if @errors.empty?
-      turn = Turn.create!(color: next_color)
-
-      turn.stone_additions.create!(row: @coordinate.row, column: @coordinate.column) if @coordinate
-
-      if @coordinate
-        surrounded_coordinates.each do |coordinate|
-          turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
-        end
-      end
-    end
-
-    @errors.empty?
+    @errors.empty? && create_turn
   end
 
   private
 
+  def create_turn
+    @turn = Turn.create!(color: next_color)
+
+    if @coordinate
+      create_stone_additions
+
+      create_stone_removals
+    end
+
+    true
+  end
+
+  def create_stone_additions
+    @turn.stone_additions.create!(row: @coordinate.row, column: @coordinate.column) if @coordinate
+  end
+
+  def create_stone_removals
+    surrounded_coordinates.each do |coordinate|
+      @turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
+    end
+  end
+
+
   def surrounded_coordinates
     @coordinate.neighbors.select do |neighbor|
-      color = @board.square(neighbor)
-      color && LibertiesCount.new(@board, neighbor, color).call == 1
+      move_will_surround_pieces?(neighbor)
     end
+  end
+
+  def move_will_surround_pieces?(coordinate)
+    color = @board.square(coordinate)
+
+    color && (LibertiesCount.new(@board, coordinate, color).call == 1)
   end
 
   def find_errors
@@ -49,10 +65,6 @@ class CreateTurn
   end
 
   def next_color
-    if Turn.last
-      OTHER_COLOR[Turn.last.color]
-    else
-      'black'
-    end
+    NextColor.new.call
   end
 end
