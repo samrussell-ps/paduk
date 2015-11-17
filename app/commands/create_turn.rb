@@ -4,8 +4,9 @@ class CreateTurn
     'white' => 'black'
   }
 
-  def initialize(coordinate)
+  def initialize(coordinate, board)
     @coordinate = coordinate
+    @board = board
   end
 
   def call
@@ -30,8 +31,8 @@ class CreateTurn
 
   def surrounded_coordinates
     @coordinate.neighbors.select do |neighbor|
-      stones = Stone.where(row: neighbor.row, column: neighbor.column)
-      LibertiesCount.new(neighbor, stones.first.color).call == 1 if stones.present?
+      color = @board.square(neighbor)
+      color && LibertiesCount.new(@board, neighbor, color).call == 1
     end
   end
 
@@ -44,7 +45,7 @@ class CreateTurn
   end
 
   def stone_at_coordinate?
-    Stone.where(row: @coordinate.row, column: @coordinate.column).present?
+    @board.square(@coordinate).present?
   end
 
   def next_color

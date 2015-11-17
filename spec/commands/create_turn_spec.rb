@@ -1,15 +1,17 @@
 require 'rails_helper'
 
 describe CreateTurn do
+  let(:board) { Board.new }
+
   context 'with a valid coordinate' do
     let(:coordinate) { Coordinate.new(row: 3, column: 7) }
 
     it 'creates a turn' do
-      expect { CreateTurn.new(coordinate).call }.to change { Turn.count }.by(1)
+      expect { CreateTurn.new(coordinate, board).call }.to change { Turn.count }.by(1)
     end
 
     it 'returns true and creates a turn with a single stone addition at that coordinate' do
-      expect(CreateTurn.new(coordinate).call).to be true
+      expect(CreateTurn.new(coordinate, board).call).to be true
 
       expect(Turn.last.stone_additions.length).to eq(1)
 
@@ -18,7 +20,7 @@ describe CreateTurn do
     end
 
     it 'creates a turn with no stone removal' do
-      CreateTurn.new(coordinate).call
+      CreateTurn.new(coordinate, board).call
 
       expect(Turn.last.stone_removals.length).to eq(0)
     end
@@ -28,17 +30,17 @@ describe CreateTurn do
     let(:coordinate) { nil }
 
     it 'creates a turn' do
-      expect { CreateTurn.new(coordinate).call }.to change { Turn.count }.by(1)
+      expect { CreateTurn.new(coordinate, board).call }.to change { Turn.count }.by(1)
     end
 
     it 'returns true and creates a turn with no stone addition at that coordinate' do
-      expect(CreateTurn.new(coordinate).call).to be true
+      expect(CreateTurn.new(coordinate, board).call).to be true
 
       expect(Turn.last.stone_additions.length).to eq(0)
     end
 
     it 'creates a turn with no stone removal' do
-      CreateTurn.new(coordinate).call
+      CreateTurn.new(coordinate, board).call
 
       expect(Turn.last.stone_removals.length).to eq(0)
     end
@@ -49,7 +51,7 @@ describe CreateTurn do
 
     it 'alternates colors' do
       coordinates.each do |coordinate|
-        CreateTurn.new(coordinate).call
+        CreateTurn.new(coordinate, board).call
       end
 
       turns = Turn.last(4)
@@ -75,15 +77,15 @@ describe CreateTurn do
 
     it 'removes the surrounded stone' do
       previous_coordinates.each do |coordinate|
-        CreateTurn.new(coordinate).call
+        CreateTurn.new(coordinate, board).call
         # make stones now, work on previous turns later
         turn = Turn.last
         stone_addition = turn.stone_additions.first
-        Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
+        #Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
+        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
       end
 
-
-      expect(CreateTurn.new(surrounding_coordinate).call).to be true
+      expect(CreateTurn.new(surrounding_coordinate, board).call).to be true
 
       surrounding_turn = Turn.last
 
@@ -109,26 +111,28 @@ describe CreateTurn do
 
     it 'returns false' do
       previous_coordinates.each do |coordinate|
-        CreateTurn.new(coordinate).call
+        CreateTurn.new(coordinate, board).call
         # make stones now, work on previous turns later
         turn = Turn.last
         stone_addition = turn.stone_additions.first
-        Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
+        #Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
+        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
       end
 
-      expect(CreateTurn.new(overlapping_coordinate).call).to be false
+      expect(CreateTurn.new(overlapping_coordinate, board).call).to be false
     end
 
     it 'does not create a turn' do
       previous_coordinates.each do |coordinate|
-        CreateTurn.new(coordinate).call
+        CreateTurn.new(coordinate, board).call
         # make stones now, work on previous turns later
         turn = Turn.last
         stone_addition = turn.stone_additions.first
-        Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
+        #Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
+        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
       end
 
-      expect { CreateTurn.new(overlapping_coordinate).call }.to_not change { Turn.count }
+      expect { CreateTurn.new(overlapping_coordinate, board).call }.to_not change { Turn.count }
     end
   end
 end

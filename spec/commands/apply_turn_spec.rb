@@ -1,31 +1,32 @@
 require 'rails_helper'
 
 describe ApplyTurn do
-  it 'creates stones where there are stone additions' do
+  it 'places stones where there are stone additions' do
     turn = Turn.create!(color: 'black')
+    board = Board.new
+
     turn.stone_additions.create!(row: 3, column: 4)
 
-    expect { ApplyTurn.new(turn).call }.to change { Stone.count }.by(1)
-    expect(Stone.last.row).to eq(3)
-    expect(Stone.last.column).to eq(4)
-    expect(Stone.last.color).to eq(turn.color)
+    expect { ApplyTurn.new(turn, board).call }.to change { board.square(Coordinate.new(row: 3, column: 4)) }.from(nil).to('black')
   end
 
   it 'removes stones where there are stone removals' do
     turn = Turn.create!(color: 'black')
+    board = Board.new
+
     turn.stone_additions.create!(row: 3, column: 4)
     turn.stone_removals.create!(row: 2, column: 5)
     turn.stone_removals.create!(row: 6, column: 7)
 
-    Stone.create!(row: 2, column: 5, color: 'white')
-    Stone.create!(row: 6, column: 7, color: 'white')
+    board.place(Coordinate.new(row: 2, column: 5), 'white')
+    board.place(Coordinate.new(row: 6, column: 7), 'white')
 
-    expect(Stone.where(row: 2, column: 5).present?).to be true
-    expect(Stone.where(row: 6, column: 7).present?).to be true
+    expect(board.square(Coordinate.new(row: 2, column: 5))).to eq('white')
+    expect(board.square(Coordinate.new(row: 6, column: 7))).to eq('white')
 
-    expect { ApplyTurn.new(turn).call }.to change { Stone.count }.by(-1)
+    ApplyTurn.new(turn, board).call
 
-    expect(Stone.where(row: 2, column: 5).present?).to be false
-    expect(Stone.where(row: 6, column: 7).present?).to be false
+    expect(board.square(Coordinate.new(row: 2, column: 5))).to eq(nil)
+    expect(board.square(Coordinate.new(row: 6, column: 7))).to eq(nil)
   end
 end

@@ -1,7 +1,8 @@
 require 'set'
 
 class ConnectedStones
-  def initialize(coordinate, color)
+  def initialize(board, coordinate, color)
+    @board = board
     @coordinate = coordinate
     @color = color
   end
@@ -13,7 +14,7 @@ class ConnectedStones
   private
 
   def flood_fill(coordinate, visited_coordinates)
-    if coordinate.valid? && visited_coordinates.exclude?(coordinate) && Stone.where(row: coordinate.row, column: coordinate.column, color: @color).present?
+    if coordinate.valid? && visited_coordinates.exclude?(coordinate) && @board.square(coordinate) == @color
       visited_coordinates << coordinate
 
       coordinate.neighbors.each do |neighbor|

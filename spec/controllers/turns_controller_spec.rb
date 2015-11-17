@@ -20,6 +20,16 @@ RSpec.describe TurnsController, type: :controller do
     end
   end
 
+  describe '#show' do
+    it 'renders the page' do
+      turn = Turn.create!(color: 'white')
+
+      get :show, id: turn.id
+
+      expect(response.status).to eq(200)
+    end
+  end
+
   describe '#destroy' do
     it 'redirects to index' do
       delete :destroy, id: 1

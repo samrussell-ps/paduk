@@ -26,29 +26,31 @@ describe LibertiesCount do
       [ 1, 1, 1, 1, 1, 0, 1 ],
     ]
   }
+  let(:board) { Board.new }
 
   before do
     colors = %w(none black white)
 
     locations_to_coordinates(stone_locations).each do |coordinate|
       color = colors[stone_locations[coordinate.row][coordinate.column]]
-      Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
+      #Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
+      board.place(coordinate, color)
     end
   end
 
   context 'single stone' do
     it 'counts liberties correctly' do
-      expect(LibertiesCount.new(Coordinate.new(row: 0, column: 0), 'white').call).to eq(2)
-      expect(LibertiesCount.new(Coordinate.new(row: 1, column: 3), 'white').call).to eq(2)
-      expect(LibertiesCount.new(Coordinate.new(row: 3, column: 0), 'white').call).to eq(1)
+      expect(LibertiesCount.new(board, Coordinate.new(row: 0, column: 0), 'white').call).to eq(2)
+      expect(LibertiesCount.new(board, Coordinate.new(row: 1, column: 3), 'white').call).to eq(2)
+      expect(LibertiesCount.new(board, Coordinate.new(row: 3, column: 0), 'white').call).to eq(1)
     end
   end
 
   context 'multiple stones' do
     it 'counts liberties correctly' do
-      expect(LibertiesCount.new(Coordinate.new(row: 5, column: 2), 'white').call).to eq(2)
-      expect(LibertiesCount.new(Coordinate.new(row: 5, column: 3), 'white').call).to eq(2)
-      expect(LibertiesCount.new(Coordinate.new(row: 4, column: 3), 'white').call).to eq(2)
+      expect(LibertiesCount.new(board, Coordinate.new(row: 5, column: 2), 'white').call).to eq(2)
+      expect(LibertiesCount.new(board, Coordinate.new(row: 5, column: 3), 'white').call).to eq(2)
+      expect(LibertiesCount.new(board, Coordinate.new(row: 4, column: 3), 'white').call).to eq(2)
     end
   end
 end
