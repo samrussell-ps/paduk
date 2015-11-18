@@ -8,7 +8,7 @@ class TurnsController < ApplicationController
   def create
     jump_to_turn
 
-    create_and_apply_piece(params[:row].to_i, params[:column].to_i)
+    create_and_apply_piece(params[:row], params[:column])
 
     redirect_to turns_url
   end
@@ -38,7 +38,7 @@ class TurnsController < ApplicationController
   end
 
   def create_and_apply_piece(row, column)
-    next_piece_coordinate = Coordinate.new(row: row, column: column)
+    next_piece_coordinate = Coordinate.new(row: row.to_i, column: column.to_i) if row && column
 
     if CreateTurn.new(next_piece_coordinate, @board).call
       ApplyTurn.new(Turn.last, @board).call

@@ -10,6 +10,22 @@ RSpec.describe TurnsController, type: :controller do
 
       expect(response).to redirect_to turns_url
     end
+
+    context 'with valid coordinates' do
+      it 'creates a turn' do
+        expect { post :create, row: row, column: column }.to change{ Turn.count }.by(1)
+      end
+    end
+
+    context 'with no coordinates' do
+      previous_turn = Turn.create!(color: 'black')
+
+      previous_turn.stone_additions.create!(row: 0, column: 0)
+
+      it 'creates a turn' do
+        expect { post :create }.to change{ Turn.count }.by(1)
+      end
+    end
   end
 
   describe '#index' do

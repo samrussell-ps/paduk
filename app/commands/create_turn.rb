@@ -20,13 +20,15 @@ class CreateTurn
   def create_turn
     @turn = Turn.create!(color: next_color)
 
-    if @coordinate
+    if !@coordinate
+      true
+    else
       create_stone_additions
 
       create_stone_removals
-    end
 
-    true
+      true
+    end
   end
 
   def create_stone_additions
@@ -38,7 +40,6 @@ class CreateTurn
       @turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
     end
   end
-
 
   def surrounded_coordinates
     @coordinate.neighbors.select do |neighbor|
