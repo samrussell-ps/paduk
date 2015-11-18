@@ -5,23 +5,49 @@ class ConnectedStones
     @board = board
     @coordinate = coordinate
     @color = color
+    @visited_coordinates = Set.new
   end
 
   def call
-    flood_fill(@coordinate, Set.new).to_a
+    visit_all_coordinates
+
+    @visited_coordinates.to_a
   end
 
   private
 
-  def flood_fill(coordinate, visited_coordinates)
-    if coordinate.valid? && visited_coordinates.exclude?(coordinate) && @board.square(coordinate) == @color
-      visited_coordinates << coordinate
+  def visit_all_coordinates
+    coordinates_to_visit = []
 
-      coordinate.neighbors.each do |neighbor|
-        visited_coordinates = flood_fill(neighbor, visited_coordinates)
-      end
+    coordinates_to_visit << @coordinate
+
+    while next_coordinate = coordinates_to_visit.shift
+      visit_coordinate(next_coordinate)
+
+      coordinates_to_visit += neighbors_to_visit(next_coordinate)
     end
+  end
 
-    visited_coordinates 
+  def visit_coordinate(coordinate)
+      @visited_coordinates << coordinate
+  end
+
+  def neighbors_to_visit(coordinate)
+    coordinate.neighbors.select do |neighbor|
+      coordinate_needs_to_be_visited?(neighbor)
+    end
+  end
+
+  def coordinate_needs_to_be_visited?(coordinate)
+    coordinate_is_same_color?(coordinate) &&
+      coordinate_has_not_been_visited?(coordinate)
+  end
+
+  def coordinate_is_same_color?(coordinate)
+    coordinate.valid? && @board.square(coordinate) == @color
+  end
+
+  def coordinate_has_not_been_visited?(coordinate)
+    @visited_coordinates.exclude?(coordinate)
   end
 end

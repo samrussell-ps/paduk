@@ -5,13 +5,28 @@ class ApplyTurn
   end
 
   def call
-    @turn.stone_additions.each do |stone_addition|
-      #Stone.create!(row: stone_addition.row, column: stone_addition.column, color: @turn.color)
-      @board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), @turn.color)
-    end
+    apply_stone_additions
 
-    @turn.stone_removals.each do |stone_removal|
-      @board.remove(Coordinate.new(row: stone_removal.row, column: stone_removal.column))
+    apply_stone_removals
+
+    true
+  end
+
+  def apply_stone_additions
+    @turn.stone_additions.each do |stone_addition|
+      @board.place(stone_move_to_coordinate(stone_addition), @turn.color)
     end
+  end
+
+  def apply_stone_removals
+    @turn.stone_removals.each do |stone_removal|
+      @board.remove(stone_move_to_coordinate(stone_removal))
+    end
+  end
+
+  private
+  
+  def stone_move_to_coordinate(stone_move)
+    Coordinate.new(row: stone_move.row, column: stone_move.column)
   end
 end
