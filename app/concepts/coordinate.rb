@@ -8,12 +8,8 @@ class Coordinate
   end
 
   def neighbors
-    [ Coordinate.new(row: @row + 1, column: @column),
-      Coordinate.new(row: @row - 1, column: @column),
-      Coordinate.new(row: @row, column: @column + 1),
-      Coordinate.new(row: @row, column: @column - 1)
-    ].each_with_object([]) do |neighbor, array|
-      array << neighbor if neighbor.valid?
+    possible_neighbors.select do |neighbor|
+      neighbor.valid?
     end
   end
 
@@ -31,5 +27,16 @@ class Coordinate
 
   def eql?(other)
     self == other
+  end
+
+  private
+
+  def possible_neighbors
+    [
+      Coordinate.new(row: @row + 1, column: @column),
+      Coordinate.new(row: @row - 1, column: @column),
+      Coordinate.new(row: @row, column: @column + 1),
+      Coordinate.new(row: @row, column: @column - 1),
+    ]
   end
 end

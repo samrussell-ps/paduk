@@ -8,11 +8,7 @@ class TurnsController < ApplicationController
   def create
     jump_to_turn
 
-    next_piece_coordinate = Coordinate.new(row: params[:row].to_i, column: params[:column].to_i)
-
-    if CreateTurn.new(next_piece_coordinate, @board).call
-      ApplyTurn.new(Turn.last, @board).call
-    end
+    create_and_apply_piece(params[:row].to_i, params[:column].to_i)
 
     redirect_to turns_url
   end
@@ -22,18 +18,30 @@ class TurnsController < ApplicationController
   end
 
   def show
-    puts params[:id]
-    @turns = Turn.where('id <= ?', params[:id])
+    jump_to_turn(params[:id])
   end
 
   private
 
   def jump_to_turn(turn_id = nil)
-    @turns = turn_id ? Turn.where('id <= ?', params[:id]).order(:id) : Turn.all.order(:id)
+    @turns = turns_up_to_id(turn_id)
+
     @board = Board.new
 
-    Turn.all.each do |turn|
+    @turns.each do |turn|
       ApplyTurn.new(turn, @board).call
+    end
+  end
+
+  def turns_up_to_id(turn_id = nil)
+    turn_id ? Turn.where('id <= ?', params[:id]).order(:id) : Turn.all.order(:id)
+  end
+
+  def create_and_apply_piece(row, column)
+    next_piece_coordinate = Coordinate.new(row: row, column: column)
+
+    if CreateTurn.new(next_piece_coordinate, @board).call
+      ApplyTurn.new(Turn.last, @board).call
     end
   end
 end
