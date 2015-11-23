@@ -4,6 +4,10 @@ describe NextColor do
   let(:board) { Board.new }
   subject(:next_color) { NextColor.new.call }
 
+  before do
+    Turn.all.each { |turn| turn.destroy! }
+  end
+
   context 'with no turns' do
     it { is_expected.to eq('black') }
   end
