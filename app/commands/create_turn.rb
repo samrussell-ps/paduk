@@ -38,13 +38,17 @@ class CreateTurn
   end
 
   def create_stone_removals
-    surrounded_coordinates.reduce(Set.new) do |coordinates_to_remove, coordinate|
-      coordinates_to_remove + stone_removals_for_connected_stones(coordinate)
-    end.each do |coordinate|
+    stone_removals_for_neighbors.each do |coordinate|
       @turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
     end
   end
 
+  def stone_removals_for_neighbors
+    surrounded_coordinates.reduce(Set.new) do |coordinates_to_remove, coordinate|
+      coordinates_to_remove + stone_removals_for_connected_stones(coordinate)
+    end
+  end
+  
   def stone_removals_for_connected_stones(coordinate)
     ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
   end
@@ -66,7 +70,24 @@ class CreateTurn
 
     if @coordinate
       @errors << :stone_at_coordinate if stone_at_coordinate?
+      @errors << :ko_rule if ko_rule?
     end
+  end
+
+  def ko_rule?
+    taking_last_piece? && replacing_last_piece?
+  end
+
+  def taking_last_piece?
+    last_move = turn_to_coordinate(Turn.last.stone_additions.first)
+
+    [last_move] == stone_removals_for_neighbors.to_a
+  end
+
+  def replacing_last_piece?
+    last_removals = Turn.last.stone_removals.map { |stone_removal| turn_to_coordinate(stone_removal) }
+
+    last_removals == [@coordinate]
   end
 
   def stone_at_coordinate?
@@ -75,5 +96,10 @@ class CreateTurn
 
   def next_color
     NextColor.new.call
+  end
+
+  # TODO make Coordinate instantiate from Turn
+  def turn_to_coordinate(turn)
+    Coordinate.new(row: turn.row, column: turn.column) if turn
   end
 end
