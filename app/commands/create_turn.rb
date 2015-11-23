@@ -1,3 +1,5 @@
+require 'set'
+
 class CreateTurn
   OTHER_COLOR = {
     'black' => 'white',
@@ -36,9 +38,15 @@ class CreateTurn
   end
 
   def create_stone_removals
-    surrounded_coordinates.each do |coordinate|
+    surrounded_coordinates.reduce(Set.new) do |coordinates_to_remove, coordinate|
+      coordinates_to_remove + stone_removals_for_connected_stones(coordinate)
+    end.each do |coordinate|
       @turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
     end
+  end
+
+  def stone_removals_for_connected_stones(coordinate)
+    ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
   end
 
   def surrounded_coordinates
