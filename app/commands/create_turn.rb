@@ -52,16 +52,13 @@ class CreateTurn
   end
   
   def stone_removals_for_connected_stones(coordinate)
-    if @board.square(coordinate) != @color
-      ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
-    else
-      []
-    end
+    ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
   end
 
   def surrounded_coordinates
     @coordinate.neighbors.select do |neighbor|
-      move_will_surround_pieces?(neighbor)
+      @board.square(neighbor) != @color &&
+        move_will_surround_pieces?(neighbor)
     end
   end
 

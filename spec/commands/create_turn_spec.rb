@@ -353,4 +353,46 @@ describe CreateTurn do
       expect { CreateTurn.new(suicide_coordinate, board).call }.to_not change { Turn.count }
     end
   end
+
+  context 'multiple calls, play in surrounded square (not suicide rule)' do
+    let(:previous_coordinates) {
+      [
+        Coordinate.new(row: 0, column: 2),
+        Coordinate.new(row: 0, column: 1),
+        Coordinate.new(row: 1, column: 2),
+        Coordinate.new(row: 1, column: 1),
+        Coordinate.new(row: 2, column: 2),
+        Coordinate.new(row: 1, column: 0),
+        Coordinate.new(row: 2, column: 1),
+        nil,
+        Coordinate.new(row: 2, column: 0),
+        nil
+      ]
+    }
+    let(:final_coordinate) {
+      Coordinate.new(row: 0, column: 0)
+    }
+
+    it 'returns true and removes 3 stones' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect(CreateTurn.new(final_coordinate, board).call).to be true
+
+      expect(Turn.last.stone_removals.count).to eq(3)
+    end
+
+    it 'creates a turn' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect { CreateTurn.new(final_coordinate, board).call }.to change { Turn.count }.by(1)
+    end
+  end
 end
