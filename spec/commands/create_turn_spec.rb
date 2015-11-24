@@ -79,8 +79,7 @@ describe CreateTurn do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
-        stone_addition = turn.stone_additions.first
-        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
+        ApplyTurn.new(turn, board).call
       end
 
       expect(CreateTurn.new(surrounding_coordinate, board).call).to be true
@@ -122,8 +121,7 @@ describe CreateTurn do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
-        stone_addition = turn.stone_additions.first
-        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
+        ApplyTurn.new(turn, board).call
       end
 
       expect(CreateTurn.new(surrounding_coordinate, board).call).to be true
@@ -153,11 +151,8 @@ describe CreateTurn do
     it 'returns false' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
-        # make stones now, work on previous turns later
         turn = Turn.last
-        stone_addition = turn.stone_additions.first
-        #Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
-        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
+        ApplyTurn.new(turn, board).call
       end
 
       expect(CreateTurn.new(overlapping_coordinate, board).call).to be false
@@ -166,14 +161,50 @@ describe CreateTurn do
     it 'does not create a turn' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
-        # make stones now, work on previous turns later
         turn = Turn.last
-        stone_addition = turn.stone_additions.first
-        #Stone.create!(row: stone_addition.row, column: stone_addition.column, color: turn.color)
-        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
+        ApplyTurn.new(turn, board).call
       end
 
       expect { CreateTurn.new(overlapping_coordinate, board).call }.to_not change { Turn.count }
+    end
+  end
+  
+  context 'multiple calls, connecting to self' do
+    let(:previous_coordinates) {
+      [
+        Coordinate.new(row: 0, column: 1),
+        Coordinate.new(row: 0, column: 5),
+        Coordinate.new(row: 1, column: 2),
+        Coordinate.new(row: 1, column: 4),
+        Coordinate.new(row: 0, column: 4),
+        Coordinate.new(row: 1, column: 3),
+      ]
+    }
+    let(:final_coordinate) {
+      Coordinate.new(row: 0, column: 3)
+    }
+
+    it 'returns true' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect(CreateTurn.new(final_coordinate, board).call).to be true
+    end
+
+    it 'creates a turn' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect { CreateTurn.new(final_coordinate, board).call }.to change { Turn.count }.by(1)
+    end
+
+    it 'does not remove any pieces' do
     end
   end
 
@@ -206,28 +237,63 @@ describe CreateTurn do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
-        stone_addition = turn.stone_additions.first
-        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
+        ApplyTurn.new(turn, board).call
       end
 
       expect { CreateTurn.new(retaking_coordinate, board).call }.to_not change { Turn.count }
     end
   end
   
-  # TODO 
-  xcontext 'multiple calls, retaking (not ko rule)' do
+  context 'multiple calls, retaking (not ko rule)' do
     let(:previous_coordinates) {
       [
         Coordinate.new(row: 0, column: 1),
-        Coordinate.new(row: 0, column: 4),
+        Coordinate.new(row: 0, column: 5),
         Coordinate.new(row: 1, column: 2),
+        Coordinate.new(row: 1, column: 4),
+        Coordinate.new(row: 0, column: 4),
         Coordinate.new(row: 1, column: 3),
         Coordinate.new(row: 0, column: 3),
-        Coordinate.new(row: 0, column: 2)
+        Coordinate.new(row: 0, column: 2),
       ]
     }
     let(:retaking_coordinate) {
       Coordinate.new(row: 0, column: 3)
+    }
+
+    it 'returns true' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect(CreateTurn.new(retaking_coordinate, board).call).to be true
+    end
+
+    it 'creates a turn' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect { CreateTurn.new(retaking_coordinate, board).call }.to change { Turn.count }.by(1)
+    end
+  end
+
+  context 'multiple calls, suicide rule' do
+    let(:previous_coordinates) {
+      [
+        Coordinate.new(row: 0, column: 1),
+        nil,
+        Coordinate.new(row: 1, column: 2),
+        nil,
+        Coordinate.new(row: 0, column: 3),
+      ]
+    }
+    let(:suicide_coordinate) {
+      Coordinate.new(row: 0, column: 2)
     }
 
     it 'returns false' do
@@ -237,18 +303,19 @@ describe CreateTurn do
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(retaking_coordinate, board).call).to be false
+      puts board
+
+      expect(CreateTurn.new(suicide_coordinate, board).call).to be false
     end
 
     it 'does not create a turn' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
-        stone_addition = turn.stone_additions.first
-        board.place(Coordinate.new(row: stone_addition.row, column: stone_addition.column), color: turn.color)
+        ApplyTurn.new(turn, board).call
       end
 
-      expect { CreateTurn.new(retaking_coordinate, board).call }.to_not change { Turn.count }
+      expect { CreateTurn.new(suicide_coordinate, board).call }.to_not change { Turn.count }
     end
   end
 end

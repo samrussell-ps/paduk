@@ -18,4 +18,18 @@ class Board
   def remove(coordinate)
     @squares[coordinate] = nil
   end
+
+  def to_s
+    (0...NUMBER_OF_ROWS).reduce('') do |output, row|
+      (0...NUMBER_OF_COLUMNS).reduce(output) do |output, column|
+        coordinate = Coordinate.new(row: row, column: column)
+        color = square(coordinate)
+        output + case color
+                  when 'white' then 'o'
+                  when 'black' then 'x'
+                  when nil then '.'
+                  end
+      end + "\n"
+    end
+  end
 end

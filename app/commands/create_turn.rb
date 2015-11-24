@@ -12,6 +12,8 @@ class CreateTurn
   end
 
   def call
+    @color = next_color
+
     find_errors
 
     @errors.empty? && create_turn
@@ -20,7 +22,7 @@ class CreateTurn
   private
 
   def create_turn
-    @turn = Turn.create!(color: next_color)
+    @turn = Turn.create!(color: @color)
 
     if !@coordinate
       true
@@ -50,7 +52,11 @@ class CreateTurn
   end
   
   def stone_removals_for_connected_stones(coordinate)
-    ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
+    if @board.square(coordinate) != @color
+      ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
+    else
+      []
+    end
   end
 
   def surrounded_coordinates
@@ -69,13 +75,52 @@ class CreateTurn
     @errors = []
 
     if @coordinate
-      @errors << :stone_at_coordinate if stone_at_coordinate?
-      @errors << :ko_rule if ko_rule?
+      @errors += stone_placement_errors
+    end
+  end
+
+  def stone_placement_errors
+    if stone_at_coordinate?
+      [:stone_at_coordinate]
+    else
+      taking_stones_errors
+    end
+  end
+
+  def taking_stones_errors
+    if stone_removals_for_neighbors.count > 0
+      ko_rule_errors
+    else
+      square_liberties_errors
+    end
+  end
+
+  def ko_rule_errors
+    if ko_rule?
+      [:ko_rule]
+    else
+      []
+    end
+  end
+
+  def square_liberties_errors
+    if suicide_rule?
+      [:suicide_rule]
+    else
+      []
     end
   end
 
   def ko_rule?
     taking_last_piece? && replacing_last_piece?
+  end
+
+  def suicide_rule?
+    @coordinate.neighbors.count { |neighbor| @board.square(neighbor) == nil } == 0 &&
+      @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color}
+        .all? do |neighbor|
+          LibertiesCount.new(@board, neighbor, @color).call == 1
+        end
   end
 
   def taking_last_piece?
