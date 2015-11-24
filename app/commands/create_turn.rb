@@ -117,7 +117,7 @@ class CreateTurn
 
   def suicide_rule?
     @coordinate.neighbors.count { |neighbor| @board.square(neighbor) == nil } == 0 &&
-      @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color}
+      @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color }
         .all? do |neighbor|
           LibertiesCount.new(@board, neighbor, @color).call == 1
         end

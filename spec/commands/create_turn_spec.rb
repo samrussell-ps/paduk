@@ -303,7 +303,42 @@ describe CreateTurn do
         ApplyTurn.new(turn, board).call
       end
 
-      puts board
+      expect(CreateTurn.new(suicide_coordinate, board).call).to be false
+    end
+
+    it 'does not create a turn' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
+
+      expect { CreateTurn.new(suicide_coordinate, board).call }.to_not change { Turn.count }
+    end
+  end
+
+  context 'multiple calls, suicide rule, connects to chain' do
+    let(:previous_coordinates) {
+      [
+        Coordinate.new(row: 0, column: 1),
+        nil,
+        Coordinate.new(row: 1, column: 2),
+        Coordinate.new(row: 0, column: 2),
+        Coordinate.new(row: 1, column: 3),
+        nil,
+        Coordinate.new(row: 0, column: 4),
+      ]
+    }
+    let(:suicide_coordinate) {
+      Coordinate.new(row: 0, column: 3)
+    }
+
+    it 'returns false' do
+      previous_coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        turn = Turn.last
+        ApplyTurn.new(turn, board).call
+      end
 
       expect(CreateTurn.new(suicide_coordinate, board).call).to be false
     end
