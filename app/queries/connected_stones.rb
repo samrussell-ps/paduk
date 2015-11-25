@@ -4,7 +4,7 @@ class ConnectedStones
   def initialize(board, coordinate)
     @board = board
     @coordinate = coordinate
-    @color = @board.square(coordinate)
+    @color = @board.color_at(coordinate)
     @visited_coordinates = Set.new
   end
 
@@ -43,8 +43,7 @@ class ConnectedStones
   end
 
   def coordinate_is_same_color?(coordinate)
-    # TODO neighbors are already valid
-    coordinate.valid? && @board.square(coordinate) == @color
+    @board.color_at(coordinate) == @color
   end
 
   def coordinate_has_not_been_visited?(coordinate)

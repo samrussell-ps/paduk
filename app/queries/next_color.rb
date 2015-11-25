@@ -1,12 +1,7 @@
 class NextColor
-  OTHER_COLOR = {
-    'black' => 'white',
-    'white' => 'black'
-  }
-
   def call
     return 'black' if Turn.count == 0
 
-    OTHER_COLOR[Turn.last.color]
+    OtherColor.new(Turn.last.color).call
   end
 end

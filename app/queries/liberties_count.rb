@@ -4,7 +4,7 @@ class LibertiesCount
   def initialize(board, coordinate)
     @board = board
     @coordinate = coordinate
-    @color = @board.square(coordinate)
+    @color = @board.color_at(coordinate)
   end
 
   def call
@@ -14,10 +14,9 @@ class LibertiesCount
   end
 
   def liberties_of_group_of_stones(group_of_stones)
-    # TODO map + uniq
-    group_of_stones.reduce(Set.new) do |total_liberties, coordinate|
+    group_of_stones.reduce([]) do |total_liberties, coordinate|
       total_liberties + liberties_of_single_stone(coordinate)
-    end
+    end.uniq
   end
 
   def liberties_of_single_stone(coordinate)
@@ -27,7 +26,6 @@ class LibertiesCount
   end
 
   def empty_square?(coordinate)
-    #TODO neighbors are already valid
-    coordinate.valid? && @board.square(coordinate).nil?
+    @board.color_at(coordinate).nil?
   end
 end

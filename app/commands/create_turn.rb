@@ -1,12 +1,6 @@
 require 'set'
 
 class CreateTurn
-  # TODO put in one place
-  OTHER_COLOR = {
-    'black' => 'white',
-    'white' => 'black'
-  }
-
   def initialize(coordinate, board)
     @coordinate = coordinate
     @board = board
@@ -25,14 +19,17 @@ class CreateTurn
   def create_turn
     @turn = Turn.create!(color: @color)
 
-    # TODO make passing? method instead of bare @coordinate nil check
-    if @coordinate
+    unless pass_turn?
       create_stone_additions
 
       create_stone_removals
     end
 
     true
+  end
+
+  def pass_turn?
+    @coordinate.nil?
   end
 
   def create_stone_additions
@@ -46,11 +43,9 @@ class CreateTurn
   end
 
   def stone_removals_for_neighbors
-    # TODO only use reduce when you need to (map works here and do uniq at end)
-    # this is probably codebase-wide
-    surrounded_coordinates.reduce(Set.new) do |coordinates_to_remove, coordinate|
+    surrounded_coordinates.reduce([]) do |coordinates_to_remove, coordinate|
       coordinates_to_remove + stone_removals_for_connected_stones(coordinate)
-    end
+    end.uniq
   end
   
   def stone_removals_for_connected_stones(coordinate)
@@ -59,7 +54,7 @@ class CreateTurn
 
   def surrounded_coordinates
     @coordinate.neighbors.select do |neighbor|
-      @board.square(neighbor) == OTHER_COLOR[@color] &&
+      @board.color_at(neighbor) == OtherColor.new(@color).call &&
         move_will_surround_pieces?(neighbor)
     end
   end
@@ -69,7 +64,7 @@ class CreateTurn
   end
   
   def find_errors
-    return [] if @coordinate.nil?
+    return [] if pass_turn?
 
     stone_placement_errors
   end
@@ -83,7 +78,7 @@ class CreateTurn
   end
 
   def stone_at_coordinate?
-    @board.square(@coordinate).present?
+    @board.color_at(@coordinate).present?
   end
 
   def ko_rule?
@@ -109,7 +104,7 @@ class CreateTurn
   end
 
   def empty_neighbor_squares
-    @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == nil }
+    @coordinate.neighbors.select { |neighbor| @board.color_at(neighbor) == nil }
   end
 
   def would_take_last_liberty?(neighbor)
@@ -117,7 +112,7 @@ class CreateTurn
   end
 
   def same_colored_neighbors
-    @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color }
+    @coordinate.neighbors.select { |neighbor| @board.color_at(neighbor) == @color }
   end
 
   def next_color

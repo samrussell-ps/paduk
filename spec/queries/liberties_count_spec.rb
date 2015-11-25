@@ -1,20 +1,8 @@
 require 'rails_helper'
 
+require 'helper_methods'
+
 describe LibertiesCount do
-  def locations_to_coordinates(locations)
-    coordinates = Set.new
-
-    locations.each_with_index do |row, row_number|
-      row.each_with_index do |cell, column_number|
-        if cell > 0
-          coordinates.add(Coordinate.new(row: row_number, column: column_number))
-        end
-      end
-    end
-
-    coordinates
-  end
-
   let(:stone_locations) { 
     [
       [ 2, 0, 1, 0, 1, 0, 1 ],
@@ -29,12 +17,7 @@ describe LibertiesCount do
   let(:board) { Board.new }
 
   before do
-    colors = %w(none black white)
-
-    locations_to_coordinates(stone_locations).each do |coordinate|
-      color = colors[stone_locations[coordinate.row][coordinate.column]]
-      board.place(coordinate, color)
-    end
+    init_board(stone_locations)
   end
 
   context 'single stone' do

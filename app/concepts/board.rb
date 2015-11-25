@@ -12,8 +12,7 @@ class Board
     @last_move = nil
   end
 
-  #TODO maybe Board.at(coordinate)? Board.color_at(coordinate:)?
-  def square(coordinate)
+  def color_at(coordinate)
     @squares[coordinate]
   end
 
@@ -26,14 +25,12 @@ class Board
   end
 
   def to_s
-    # TODO map join
-    # if you can avoid reduce then do
-    (0...NUMBER_OF_ROWS).reduce('') do |output, row|
-      (0...NUMBER_OF_COLUMNS).reduce(output) do |output, column|
+    (0...NUMBER_OF_ROWS).map do |row|
+      (0...NUMBER_OF_COLUMNS).map do |column|
         coordinate = Coordinate.new(row: row, column: column)
 
-        output + COLOR_TO_TEXT_SYMBOL[square(coordinate)]
-      end + "\n"
-    end
+        COLOR_TO_TEXT_SYMBOL[color_at(coordinate)]
+      end.join
+    end.join("\n")
   end
 end

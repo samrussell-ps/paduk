@@ -1,22 +1,8 @@
 require 'rails_helper'
 require 'set'
+require 'helper_methods'
 
 describe ConnectedStones do
-  # TODO DRY (helper)
-  def locations_to_coordinates(locations)
-    coordinates = Set.new
-
-    locations.each_with_index do |row, row_number|
-      row.each_with_index do |cell, column_number|
-        if cell > 0
-          coordinates.add(Coordinate.new(row: row_number, column: column_number))
-        end
-      end
-    end
-
-    coordinates
-  end
-
   let(:stone_locations) { 
     [
       [ 1, 1, 1, 1, 1, 0, 0 ],
@@ -92,14 +78,8 @@ describe ConnectedStones do
   let(:board) { Board.new }
 
   context 'single color' do
-    # TODO helper
     before do
-      colors = %w(none black white)
-
-      locations_to_coordinates(stone_locations).each do |coordinate|
-        color = colors[stone_locations[coordinate.row][coordinate.column]]
-        board.place(coordinate, color)
-      end
+      init_board(stone_locations)
     end
 
     it 'finds the easy (non-recursive) matches' do
@@ -129,12 +109,7 @@ describe ConnectedStones do
 
   context 'multiple colors' do
     before do
-      colors = %w(none black white)
-
-      locations_to_coordinates(multicolor_stone_locations).each do |coordinate|
-        color = colors[multicolor_stone_locations[coordinate.row][coordinate.column]]
-        board.place(coordinate, color)
-      end
+      init_board(multicolor_stone_locations)
     end
 
     it 'works with multiple colors' do
