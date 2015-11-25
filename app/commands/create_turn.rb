@@ -24,15 +24,13 @@ class CreateTurn
   def create_turn
     @turn = Turn.create!(color: @color)
 
-    if !@coordinate
-      true
-    else
+    if @coordinate
       create_stone_additions
 
       create_stone_removals
-
-      true
     end
+
+    true
   end
 
   def create_stone_additions
@@ -52,20 +50,18 @@ class CreateTurn
   end
   
   def stone_removals_for_connected_stones(coordinate)
-    ConnectedStones.new(@board, coordinate, @board.square(coordinate)).call
+    ConnectedStones.new(@board, coordinate).call
   end
 
   def surrounded_coordinates
     @coordinate.neighbors.select do |neighbor|
-      @board.square(neighbor) != @color &&
+      @board.square(neighbor) == OTHER_COLOR[@color] &&
         move_will_surround_pieces?(neighbor)
     end
   end
 
   def move_will_surround_pieces?(coordinate)
-    color = @board.square(coordinate)
-
-    color && (LibertiesCount.new(@board, coordinate, color).call == 1)
+    LibertiesCount.new(@board, coordinate).call == 1
   end
 
   def find_errors
@@ -124,7 +120,7 @@ class CreateTurn
   end
 
   def would_take_last_liberty(neighbor)
-    LibertiesCount.new(@board, neighbor, @color).call == 1
+    LibertiesCount.new(@board, neighbor).call == 1
   end
 
   def same_colored_neighbors

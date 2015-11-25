@@ -1,14 +1,14 @@
 require 'set'
 
 class LibertiesCount
-  def initialize(board, coordinate, color)
+  def initialize(board, coordinate)
     @board = board
     @coordinate = coordinate
-    @color = color
+    @color = @board.square(coordinate)
   end
 
   def call
-    connected_stones = ConnectedStones.new(@board, @coordinate, @color).call
+    connected_stones = ConnectedStones.new(@board, @coordinate).call
 
     liberties_of_group_of_stones(connected_stones).count
   end

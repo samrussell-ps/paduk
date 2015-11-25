@@ -91,7 +91,6 @@ describe ConnectedStones do
 
       locations_to_coordinates(stone_locations).each do |coordinate|
         color = colors[stone_locations[coordinate.row][coordinate.column]]
-        #Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
         board.place(coordinate, color)
       end
     end
@@ -101,12 +100,12 @@ describe ConnectedStones do
       easy_coordinates3 = locations_to_coordinates(connected_stones3)
 
       easy_coordinates2.each do |coordinate|
-        connected_stones = ConnectedStones.new(board, coordinate, 'black').call
+        connected_stones = ConnectedStones.new(board, coordinate).call
         expect(connected_stones).to contain_exactly(*easy_coordinates2)
       end
 
       easy_coordinates3.each do |coordinate|
-        connected_stones = ConnectedStones.new(board, coordinate, 'black').call
+        connected_stones = ConnectedStones.new(board, coordinate).call
         expect(connected_stones).to contain_exactly(*easy_coordinates3)
       end
     end
@@ -115,7 +114,7 @@ describe ConnectedStones do
       hard_coordinates = locations_to_coordinates(connected_stones1)
 
       hard_coordinates.each do |coordinate|
-        connected_stones = ConnectedStones.new(board, coordinate, 'black').call
+        connected_stones = ConnectedStones.new(board, coordinate).call
         expect(connected_stones).to contain_exactly(*hard_coordinates)
       end
     end
@@ -127,7 +126,6 @@ describe ConnectedStones do
 
       locations_to_coordinates(multicolor_stone_locations).each do |coordinate|
         color = colors[multicolor_stone_locations[coordinate.row][coordinate.column]]
-        #Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
         board.place(coordinate, color)
       end
     end
@@ -136,7 +134,7 @@ describe ConnectedStones do
       multicolor_coordinates1 = locations_to_coordinates(multicolor_connected_stones1)
 
       multicolor_coordinates1.each do |coordinate|
-        connected_stones = ConnectedStones.new(board, coordinate, 'black').call
+        connected_stones = ConnectedStones.new(board, coordinate).call
         expect(connected_stones).to contain_exactly(*multicolor_coordinates1)
       end
     end

@@ -1,10 +1,10 @@
 require 'set'
 
 class ConnectedStones
-  def initialize(board, coordinate, color)
+  def initialize(board, coordinate)
     @board = board
     @coordinate = coordinate
-    @color = color
+    @color = @board.square(coordinate)
     @visited_coordinates = Set.new
   end
 
