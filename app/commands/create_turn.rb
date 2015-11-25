@@ -132,13 +132,13 @@ class CreateTurn
   end
 
   def taking_last_piece?
-    last_move = turn_to_coordinate(Turn.last.stone_additions.first) if Turn.last
+    last_move = Turn.last.stone_additions.first.to_coordinate if Turn.last.stone_additions.present?
 
     [last_move] == stone_removals_for_neighbors.to_a
   end
 
   def replacing_last_piece?
-    last_removals = Turn.last.stone_removals.map { |stone_removal| turn_to_coordinate(stone_removal) } if Turn.last
+    last_removals = Turn.last.stone_removals.map(&:to_coordinate) if Turn.last.stone_removals.present?
 
     last_removals == [@coordinate]
   end
@@ -149,10 +149,5 @@ class CreateTurn
 
   def next_color
     NextColor.new.call
-  end
-
-  # TODO make Coordinate instantiate from Turn
-  def turn_to_coordinate(turn)
-    Coordinate.new(row: turn.row, column: turn.column) if turn
   end
 end

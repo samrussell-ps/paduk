@@ -14,19 +14,13 @@ class ApplyTurn
 
   def apply_stone_additions
     @turn.stone_additions.each do |stone_addition|
-      @board.place(stone_move_to_coordinate(stone_addition), @turn.color)
+      @board.place(stone_addition.to_coordinate, @turn.color)
     end
   end
 
   def apply_stone_removals
     @turn.stone_removals.each do |stone_removal|
-      @board.remove(stone_move_to_coordinate(stone_removal))
+      @board.remove(stone_removal.to_coordinate)
     end
-  end
-
-  private
-  
-  def stone_move_to_coordinate(stone_move)
-    Coordinate.new(row: stone_move.row, column: stone_move.column)
   end
 end

@@ -6,9 +6,16 @@ RSpec.describe StoneRemoval, type: :model do
   let(:turn) { Turn.create!(color: 'white') }
 
   context 'with a row, column and turn' do
-    subject { StoneRemoval.create(row: row, column: column, turn: turn) }
+    subject(:stone_removal) { StoneRemoval.create(row: row, column: column, turn: turn) }
 
     it { is_expected.to be_valid }
+
+    describe '#to_coordinate' do
+      let(:expected_coordinate) { Coordinate.new(row: row, column: column) }
+      subject { stone_removal.to_coordinate }
+
+      it { is_expected.to eq expected_coordinate }
+    end
   end
 
   context 'with a row, column and no turn' do

@@ -12,4 +12,8 @@ class StoneAddition < ActiveRecord::Base
     in: (0...Board::NUMBER_OF_COLUMNS),
     message: "column is %{value}, it must be 0 <= value < #{Board::NUMBER_OF_COLUMNS}"
   }
+
+  def to_coordinate
+    Coordinate.new(row: row, column: column)
+  end
 end
