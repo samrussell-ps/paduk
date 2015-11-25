@@ -1,6 +1,11 @@
 class Board
   NUMBER_OF_ROWS = 19
   NUMBER_OF_COLUMNS = 19
+  COLOR_TO_TEXT_SYMBOL = {
+    'white' => 'o',
+    'black' => 'x',
+    nil => '.'
+  }
 
   def initialize
     @squares = {}
@@ -23,12 +28,8 @@ class Board
     (0...NUMBER_OF_ROWS).reduce('') do |output, row|
       (0...NUMBER_OF_COLUMNS).reduce(output) do |output, column|
         coordinate = Coordinate.new(row: row, column: column)
-        color = square(coordinate)
-        output + case color
-                  when 'white' then 'o'
-                  when 'black' then 'x'
-                  when nil then '.'
-                  end
+
+        output + COLOR_TO_TEXT_SYMBOL[square(coordinate)]
       end + "\n"
     end
   end

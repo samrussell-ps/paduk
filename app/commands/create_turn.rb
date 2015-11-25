@@ -113,11 +113,22 @@ class CreateTurn
   end
 
   def suicide_rule?
-    @coordinate.neighbors.count { |neighbor| @board.square(neighbor) == nil } == 0 &&
-      @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color }
-        .all? do |neighbor|
-          LibertiesCount.new(@board, neighbor, @color).call == 1
-        end
+    empty_neighbor_squares.count == 0 &&
+      same_colored_neighbors.all? do |neighbor|
+        would_take_last_liberty(neighbor)
+      end
+  end
+
+  def empty_neighbor_squares
+    @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == nil }
+  end
+
+  def would_take_last_liberty(neighbor)
+    LibertiesCount.new(@board, neighbor, @color).call == 1
+  end
+
+  def same_colored_neighbors
+    @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color }
   end
 
   def taking_last_piece?
