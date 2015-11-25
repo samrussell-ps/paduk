@@ -47,8 +47,14 @@ RSpec.describe TurnsController, type: :controller do
   end
 
   describe '#destroy' do
-    it 'redirects to index' do
+    it 'deletes all turns and redirects to index' do
+      5.times.each { Turn.create! }
+
+      expect(Turn.count).to_not eq(0)
+
       delete :destroy, id: 1
+
+      expect(Turn.count).to eq(0)
 
       expect(response).to redirect_to turns_url
     end

@@ -24,7 +24,12 @@ empty_square = "\xE2\x97\xBB"
     </tr>
   <% end %>
 </table>
-<%= link_to "Pass turn", turns_path, method: :post %>
+<div>
+  <%= link_to "Pass turn", turns_path, method: :post %>
+</div>
+<div>
+  <%= link_to "New game", '/turn', method: :delete %>
+</div>
 <ol>
 <% @turns.each do |turn| %>
   <li><%= turn.inspect %> <%= turn.stone_additions.inspect %> <%= turn.stone_removals.inspect %></li>

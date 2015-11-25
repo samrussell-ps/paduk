@@ -14,6 +14,8 @@ class TurnsController < ApplicationController
   end
 
   def destroy
+    Turn.destroy_all
+
     redirect_to turns_url
   end
 

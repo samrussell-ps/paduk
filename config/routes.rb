@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
   
-  resources :turns, only: [:create, :index, :destroy, :show]
+  resources :turns, only: [:create, :index, :show]
+  resource :turn, only: [:destroy]
 
   root 'turns#index'
 
