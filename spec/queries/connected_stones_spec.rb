@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'set'
 
 describe ConnectedStones do
-  # todo DRY
+  # TODO DRY (helper)
   def locations_to_coordinates(locations)
     coordinates = Set.new
 
@@ -28,7 +28,8 @@ describe ConnectedStones do
       [ 1, 1, 1, 1, 1, 0, 1 ]
     ]
   }
-  let(:connected_stones1){
+
+  let(:connected_stones1) {
     [
       [ 1, 1, 1, 1, 1, 0, 0 ],
       [ 1, 0, 1, 1, 1, 1, 1 ],
@@ -39,6 +40,7 @@ describe ConnectedStones do
       [ 1, 1, 1, 1, 1, 0, 0 ]
     ]
   }
+
   let(:connected_stones2) { 
     [
       [ 0, 0, 0, 0, 0, 0, 0 ],
@@ -50,6 +52,7 @@ describe ConnectedStones do
       [ 0, 0, 0, 0, 0, 0, 1 ],
     ]
   }
+
   let(:connected_stones3) { 
     [
       [ 0, 0, 0, 0, 0, 0, 0 ],
@@ -61,6 +64,7 @@ describe ConnectedStones do
       [ 0, 0, 0, 0, 0, 0, 0 ],
     ]
   }
+
   let(:multicolor_stone_locations) { 
     [
       [ 0, 0, 1, 2, 2, 2, 0 ],
@@ -72,6 +76,7 @@ describe ConnectedStones do
       [ 1, 1, 0, 0, 0, 1, 1 ]
     ]
   }
+
   let(:multicolor_connected_stones1) { 
     [
       [ 0, 0, 1, 0, 0, 0, 0 ],
@@ -83,9 +88,11 @@ describe ConnectedStones do
       [ 0, 0, 0, 0, 0, 0, 0 ],
     ]
   }
+
   let(:board) { Board.new }
 
   context 'single color' do
+    # TODO helper
     before do
       colors = %w(none black white)
 

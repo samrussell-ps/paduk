@@ -14,6 +14,7 @@ class LibertiesCount
   end
 
   def liberties_of_group_of_stones(group_of_stones)
+    # TODO map + uniq
     group_of_stones.reduce(Set.new) do |total_liberties, coordinate|
       total_liberties + liberties_of_single_stone(coordinate)
     end
@@ -26,6 +27,7 @@ class LibertiesCount
   end
 
   def empty_square?(coordinate)
+    #TODO neighbors are already valid
     coordinate.valid? && @board.square(coordinate).nil?
   end
 end

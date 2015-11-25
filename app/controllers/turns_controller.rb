@@ -23,6 +23,7 @@ class TurnsController < ApplicationController
 
   private
 
+  # TODO ApplyTurnS service
   def jump_to_turn(turn_id = nil)
     @turns = turns_up_to_id(turn_id)
 
@@ -40,6 +41,7 @@ class TurnsController < ApplicationController
   def create_and_apply_piece(row, column)
     next_piece_coordinate = Coordinate.new(row: row.to_i, column: column.to_i) if row && column
 
+    # TODO transaction/lock
     if CreateTurn.new(next_piece_coordinate, @board).call
       ApplyTurn.new(Turn.last, @board).call
     end

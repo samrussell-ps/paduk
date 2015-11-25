@@ -33,7 +33,6 @@ describe LibertiesCount do
 
     locations_to_coordinates(stone_locations).each do |coordinate|
       color = colors[stone_locations[coordinate.row][coordinate.column]]
-      #Stone.create!(row: coordinate.row, column: coordinate.column, color: color)
       board.place(coordinate, color)
     end
   end

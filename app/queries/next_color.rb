@@ -4,9 +4,6 @@ class NextColor
     'white' => 'black'
   }
 
-  def initialize
-  end
-
   def call
     return 'black' if Turn.count == 0
 

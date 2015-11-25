@@ -29,7 +29,7 @@ class ConnectedStones
   end
 
   def visit_coordinate(coordinate)
-      @visited_coordinates << coordinate
+    @visited_coordinates << coordinate
   end
 
   def neighbors_to_visit(coordinate)
@@ -39,11 +39,11 @@ class ConnectedStones
   end
 
   def coordinate_needs_to_be_visited?(coordinate)
-    coordinate_is_same_color?(coordinate) &&
-      coordinate_has_not_been_visited?(coordinate)
+    coordinate_is_same_color?(coordinate) && coordinate_has_not_been_visited?(coordinate)
   end
 
   def coordinate_is_same_color?(coordinate)
+    # TODO neighbors are already valid
     coordinate.valid? && @board.square(coordinate) == @color
   end
 

@@ -24,6 +24,7 @@ describe Board do
     end
   end
 
+  # TODO rails has strip_heredoc
   describe '#to_s' do
     let(:expected_to_s) { <<-TOS.gsub(/ {6}/, '')
       ...................
