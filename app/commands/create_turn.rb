@@ -108,6 +108,18 @@ class CreateTurn
     taking_last_piece? && replacing_last_piece?
   end
 
+  def taking_last_piece?
+    last_move = Turn.last.stone_additions.first.to_coordinate if Turn.last.stone_additions.present?
+
+    [last_move] == stone_removals_for_neighbors.to_a
+  end
+
+  def replacing_last_piece?
+    last_removals = Turn.last.stone_removals.map(&:to_coordinate) if Turn.last.stone_removals.present?
+
+    last_removals == [@coordinate]
+  end
+
   def suicide_rule?
     empty_neighbor_squares.count == 0 &&
       same_colored_neighbors.all? do |neighbor|
@@ -125,18 +137,6 @@ class CreateTurn
 
   def same_colored_neighbors
     @coordinate.neighbors.select { |neighbor| @board.square(neighbor) == @color }
-  end
-
-  def taking_last_piece?
-    last_move = Turn.last.stone_additions.first.to_coordinate if Turn.last.stone_additions.present?
-
-    [last_move] == stone_removals_for_neighbors.to_a
-  end
-
-  def replacing_last_piece?
-    last_removals = Turn.last.stone_removals.map(&:to_coordinate) if Turn.last.stone_removals.present?
-
-    last_removals == [@coordinate]
   end
 
   def stone_at_coordinate?
