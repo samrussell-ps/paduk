@@ -7,9 +7,15 @@ class Board
     nil => '.'
   }
 
+  attr_reader :removed_stones
+
   def initialize
     @squares = {}
     @last_move = nil
+    @removed_stones = {
+      'black' => 0,
+      'white' => 0
+    }
   end
 
   def color_at(coordinate)
@@ -21,6 +27,8 @@ class Board
   end
 
   def remove(coordinate)
+    @removed_stones[color_at(coordinate)] += 1
+
     @squares[coordinate] = nil
   end
 

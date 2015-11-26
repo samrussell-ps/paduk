@@ -24,6 +24,40 @@ describe Board do
     end
   end
 
+  describe '#removed_stones' do
+    let(:coordinates) {
+      [
+        Coordinate.new(row: 1, column: 0),
+        Coordinate.new(row: 0, column: 0),
+        Coordinate.new(row: 0, column: 1),
+        Coordinate.new(row: 1, column: 1),
+        Coordinate.new(row: 2, column: 1),
+        Coordinate.new(row: 2, column: 0),
+        Coordinate.new(row: 3, column: 1),
+        Coordinate.new(row: 3, column: 0),
+        Coordinate.new(row: 4, column: 0),
+        Coordinate.new(row: 2, column: 0),
+        Coordinate.new(row: 2, column: 2),
+        Coordinate.new(row: 0, column: 0),
+        Coordinate.new(row: 1, column: 2),
+        Coordinate.new(row: 0, column: 2)
+      ]
+    }
+    let(:removed_stones) { board.removed_stones }
+
+    it 'returns removed stones by color' do
+      Turn.destroy_all
+
+      coordinates.each do |coordinate|
+        CreateTurn.new(coordinate, board).call
+        ApplyTurn.new(Turn.last, board).call
+      end
+
+      expect(removed_stones['black']).to eq(2)
+      expect(removed_stones['white']).to eq(3)
+    end
+  end
+
   describe '#to_s' do
     let(:expected_to_s) { <<-TOS.strip_heredoc.chomp
       ...................
