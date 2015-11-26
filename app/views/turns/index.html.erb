@@ -1,9 +1,39 @@
-<% circles = {
-  'black' => "\xE2\x9A\xAB",
-  'white' => "\xE2\x9A\xAA"
-}
-empty_square = "\xE2\x97\xBB"
-%>
+<script>
+  <!--
+  $(function() {
+    $('input').change(function() {
+      $('#black-score').text(calculateBlackScore());
+      $('#white-score').text(calculateWhiteScore());
+    });
+  });
+
+  function calculateBlackScore(){
+    return parseInt($('#white-lost-stones').text()) + parseInt($('#black-territory').val());
+  }
+
+  function calculateWhiteScore(){
+    return parseInt($('#black-lost-stones').text()) + parseInt($('#white-territory').val());
+  }
+  // -->
+</script>
+
+<div>
+  Lost stones
+  <p> Black: <span id="black-lost-stones"><%= @board.removed_stones['black'] %></span></p>
+  <p> White: <span id="white-lost-stones"><%= @board.removed_stones['white'] %></span></p>
+</div>
+<div>
+  <form id="territory">
+    Territory
+    <p> Black: <input type="text" id="black-territory" value="0" /></p>
+    <p> White: <input type="text" id="white-territory" value="0" /></p>
+  </form>
+</div>
+<div>
+  Total score
+  <p>Black: <span id="black-score"><%= @board.removed_stones['white'] %></span></p>
+  <p>White: <span id="white-score"><%= @board.removed_stones['black'] %></span></p>
+</div>
 <div>
   Next turn: <%= @next_color %>
 </div>
