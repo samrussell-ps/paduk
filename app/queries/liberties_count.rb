@@ -14,8 +14,8 @@ class LibertiesCount
   end
 
   def liberties_of_group_of_stones(group_of_stones)
-    group_of_stones.reduce([]) do |total_liberties, coordinate|
-      total_liberties + liberties_of_single_stone(coordinate)
+    group_of_stones.flat_map do |coordinate|
+      liberties_of_single_stone(coordinate)
     end.uniq
   end
 

@@ -43,8 +43,8 @@ class CreateTurn
   end
 
   def stone_removals_for_neighbors
-    surrounded_coordinates.reduce([]) do |coordinates_to_remove, coordinate|
-      coordinates_to_remove + stone_removals_for_connected_stones(coordinate)
+    surrounded_coordinates.flat_map do |coordinate|
+      stone_removals_for_connected_stones(coordinate)
     end.uniq
   end
   
