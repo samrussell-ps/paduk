@@ -6,33 +6,16 @@ empty_square = "\xE2\x97\xBB"
 %>
 <div>
   Next turn: <%= @next_color %>
-  </div>
-  <div>
-<table style="border: 1px solid black;">
-  <% Board::NUMBER_OF_ROWS.times do |row_number| %>
-    <tr>
-      <% Board::NUMBER_OF_COLUMNS.times do |column_number| %>
-        <td style="border: 1px solid black;">
-          <% color = @board.color_at(Coordinate.new(row: row_number, column: column_number)) %>
-          <% if color %>
-            <%= link_to circles[color], turns_path(row: row_number, column: column_number), method: :destroy %>
-          <% else %>
-            <%= link_to empty_square, turns_path(row: row_number, column: column_number), method: :post %>
-          <% end %>
-        </td>
-      <% end %>
-    </tr>
-  <% end %>
-</table>
+</div>
+
+<div>
+  <%= render 'board' %>
+</div>
+
 <div>
   <%= link_to "Pass turn", turns_path, method: :post %>
 </div>
+
 <div>
   <%= link_to "New game", '/turn', method: :delete %>
-</div>
-<ol>
-<% @turns.each do |turn| %>
-  <li><%= turn.inspect %> <%= turn.stone_additions.inspect %> <%= turn.stone_removals.inspect %></li>
-<% end %>
-</ol>
 </div>
