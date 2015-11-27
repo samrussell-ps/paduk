@@ -20,6 +20,8 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'rspec-activemodel-mocks'
   gem 'guard-rspec', require: false
+  gem 'jasmine'
+  gem 'jasmine-jquery-rails'
   gem 'codeclimate-test-reporter'
 end
 
