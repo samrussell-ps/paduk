@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'JSON'
 
 describe Coordinate do
   let(:row) { 4 }
