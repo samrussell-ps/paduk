@@ -1,4 +1,4 @@
-function initBoard(){ 
+function initBoard(turns){ 
   var board = d3.select("#board-container").append("svg").attr("height", "475px").attr("width", "475px");
   board.append("rect").attr({width: 500, height: 500, x: 0, y: 0, fill: "#E09E48"});
 
@@ -37,20 +37,59 @@ function initBoard(){
     });
   });
 
-  $('svg').click(boardClick);
+  //turns.forEach(function(turn) {
+    //console.log(turn);
+  //});
+  drawStone(2, 2, "#000000", board);
 
+  $('svg').click(boardClick);
+}
+
+function otherColor(color) {
+  if(color == "#ffffff"){
+    return "#000000";
+  }
+  return "#ffffff";
+}
+
+function drawStone(x, y, color, board) {
+      board.append("ellipse")
+      .attr({
+        cx: x*25+12.5,
+        cy: y*25+12.5,
+        rx: 9,
+        ry: 9,
+        fill: otherColor(color)
+      });
+
+      board.append("ellipse")
+      .attr({
+        cx: x*25+12.5,
+        cy: y*25+12.5,
+        rx: 8,
+        ry: 8,
+        fill: color
+      });
+}
+
+function submitTurn(x, y) {
+  $('#turn').children('#row').val(y);
+  $('#turn').children('#column').val(x);
+  $('#turn').submit();
 }
 
 function boardClick(e) {
   square = mouseCoordToSquare(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top);
   if(closeToSquare(square[0], square[1]))
-    console.log(Math.round(square[0]) + ', ' + Math.round(square[1]));
+    submitTurn(Math.round(square[0]), Math.round(square[1]));
+    //console.log(Math.round(square[0]) + ', ' + Math.round(square[1]));
 }
 
 function closeToSquare(x, y) {
   if(
       Math.abs(x - Math.round(x)) < 0.25 &&
-      Math.abs(y - Math.round(y)) < 0.25)
+      Math.abs(y - Math.round(y)) < 0.25
+    )
     return true;
   else
     return false;

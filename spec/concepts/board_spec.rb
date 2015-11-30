@@ -89,4 +89,39 @@ describe Board do
       expect(board.to_s).to eq(expected_to_s)
     end
   end
+
+  describe '#as_json' do
+    let(:expected_as_json) {
+      { 'removed_stones' => { 'black' => 2, 'white' => 1 },
+        'stones' => {
+          'black' => [
+            { 'row' => 4, 'column' => 3 },
+            { 'row' => 6, 'column' => 7 }
+          ],
+          'white' => [
+            { 'row' => 4, 'column' => 1 },
+            { 'row' => 6, 'column' => 5 }
+          ]
+        }
+      }
+    }
+
+    before do
+      board.place(Coordinate.new(row: 1, column: 1), 'white')
+      board.place(Coordinate.new(row: 2, column: 3), 'black')
+      board.place(Coordinate.new(row: 2, column: 4), 'black')
+      board.remove(Coordinate.new(row: 1, column: 1))
+      board.remove(Coordinate.new(row: 2, column: 3))
+      board.remove(Coordinate.new(row: 2, column: 4))
+
+      board.place(Coordinate.new(row: 4, column: 1), 'white')
+      board.place(Coordinate.new(row: 4, column: 3), 'black')
+      board.place(Coordinate.new(row: 6, column: 5), 'white')
+      board.place(Coordinate.new(row: 6, column: 7), 'black')
+    end
+
+    it 'produces expected JSON' do
+      expect(board.as_json).to eq(expected_as_json)
+    end
+  end
 end

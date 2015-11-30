@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'JSON'
 
 describe Coordinate do
   let(:row) { 4 }
@@ -8,6 +9,14 @@ describe Coordinate do
   it 'exposes row and column' do
     expect(coordinate.row).to eq(row)
     expect(coordinate.column).to eq(column)
+  end
+
+  describe '#as_json' do
+    let(:expected_as_json) { { 'row' => 4, 'column' => 7 } }
+
+    it 'produces expected JSON' do
+      expect(coordinate.as_json).to eq(expected_as_json)
+    end
   end
 
   describe '#neighbors' do

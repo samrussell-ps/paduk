@@ -1,3 +1,5 @@
+require 'json'
+
 class TurnsController < ApplicationController
   def index
     @next_color = NextColor.new.call

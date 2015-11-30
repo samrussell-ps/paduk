@@ -1,7 +1,14 @@
 <div id="board-container">
 </div>
+<%= form_tag(turns_path, method: :post,  style: "visiblity:hidden", id: "turn") do %>
+  <input id="row" name="row" type="hidden" />
+  <input id="column" name="column" type="hidden" />
+<% end %>
 <script>
-  $(function () { initBoard(); });
+  $(function () { 
+    initBoard();
+    //<%= @json_turns %>);
+  });
 </script>
 <% circles = {
   'black' => "\xE2\x9A\xAB",
