@@ -1,5 +1,3 @@
-require 'JSON'
-
 class Board
   NUMBER_OF_ROWS = 19
   NUMBER_OF_COLUMNS = 19
