@@ -7,12 +7,15 @@
 <script>
   $(function () { 
     board_data = <%= JSON.generate(@board.as_json).html_safe %>;
-    initBoard(board_data);
+    //initBoard(board_data);
+    var board = new Board();
+    board.display();
+    board_data["stones"]["black"].forEach(function(coordinate) {
+      board.placeStone(coordinate, new Color("black"));
+    });
+
+    board_data["stones"]["white"].forEach(function(coordinate) {
+      board.placeStone(coordinate, new Color("white"));
+    });
   });
 </script>
-<% circles = {
-  'black' => "\xE2\x9A\xAB",
-  'white' => "\xE2\x9A\xAA"
-}
-empty_square = "\xE2\x97\xBB"
-%>
