@@ -48,9 +48,11 @@ class Board
     black_stones = @stones.select { |coordinate, color| color == 'black' }.map do |coordinate, _color|
       coordinate.as_json
     end
+
     white_stones = @stones.select { |coordinate, color| color == 'white' }.map do |coordinate, _color|
       coordinate.as_json
     end
+
     data = { 'removed_stones' => @removed_stones,
       'stones' => {
         'black' => black_stones,

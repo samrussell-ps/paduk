@@ -1,4 +1,4 @@
-function initBoard(turns){ 
+function initBoard(board_data){ 
   var board = d3.select("#board-container").append("svg").attr("height", "475px").attr("width", "475px");
   board.append("rect").attr({width: 500, height: 500, x: 0, y: 0, fill: "#E09E48"});
 
@@ -37,10 +37,13 @@ function initBoard(turns){
     });
   });
 
-  //turns.forEach(function(turn) {
-    //console.log(turn);
-  //});
-  drawStone(2, 2, "#000000", board);
+  board_data["stones"]["black"].forEach(function(coordinate) {
+    drawStone(coordinate["column"], coordinate["row"], "#000000", board);
+  });
+
+  board_data["stones"]["white"].forEach(function(coordinate) {
+    drawStone(coordinate["column"], coordinate["row"], "#ffffff", board);
+  });
 
   $('svg').click(boardClick);
 }

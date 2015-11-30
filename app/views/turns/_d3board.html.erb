@@ -6,8 +6,8 @@
 <% end %>
 <script>
   $(function () { 
-    initBoard();
-    //<%= @json_turns %>);
+    board_data = <%= JSON.generate(@board.as_json).html_safe %>;
+    initBoard(board_data);
   });
 </script>
 <% circles = {
