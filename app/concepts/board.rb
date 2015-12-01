@@ -13,6 +13,7 @@ class Board
     }
   end
 
+  # TODO make this return a Stone
   def color_at(coordinate)
     @stones[coordinate]
   end

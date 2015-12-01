@@ -6,9 +6,16 @@ class Turn < ActiveRecord::Base
 
   def self.ordered(id = nil)
     if id
-      Turn.where('id <= ?', id).order(:created_at)
+      where('id <= ?', id).order(:created_at)
     else
-      Turn.all.order(:created_at)
+      all.order(:created_at)
+    end
+  end
+
+  def self.with_table_lock
+    transaction do
+      ActiveRecord::Base.connection.execute('LOCK TABLE Turns')
+      yield
     end
   end
 end
