@@ -28,8 +28,6 @@ class TurnsController < ApplicationController
   private
 
   def jump_to_turn(turn_id = nil)
-    @turns = turns_up_to_id(turn_id)
-
     @board = Board.new
 
     ApplyTurns.new(board: @board, turn_id: turn_id).call
