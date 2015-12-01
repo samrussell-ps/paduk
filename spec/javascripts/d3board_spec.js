@@ -32,7 +32,6 @@ describe("BoardSpec", function () {
   beforeEach(function() {
     setFixtures('<div id="board-container"></div>');
     var board_data = {"removed_stones":{"black":0,"white":0},"stones":{"black":[{"row":3,"column":15},{"row":3,"column":3}],"white":[{"row":15,"column":3},{"row":15,"column":16}]}};
-    //initBoard(board_data);
     board = new Board();
   });
 
@@ -69,6 +68,27 @@ describe("BoardSpec", function () {
       board.placeStone(coordinate, color);
 
       expect($("#board-container").children("svg").children("ellipse").length).toBe(9 + 2);
+    });
+  });
+
+  describe("#mouseCoordToSquare", function() {
+    it("converts click coords to square coords", function() {
+      expect(board.mouseCoordToSquare(112.5, 212.5)[0]).toBe(4);
+      expect(board.mouseCoordToSquare(112.5, 212.5)[1]).toBe(8);
+    });
+  });
+
+  describe("#closeToSquare", function() {
+    it("correctly decides when a coords are close to a square", function() {
+      expect(board.closeToSquare(4, 5)).toBe(true);
+      expect(board.closeToSquare(4.2, 5)).toBe(true);
+      expect(board.closeToSquare(3.8, 5)).toBe(true);
+      expect(board.closeToSquare(5, 3.8)).toBe(true);
+      expect(board.closeToSquare(5, 4.2)).toBe(true);
+      expect(board.closeToSquare(4.3, 5)).toBe(false);
+      expect(board.closeToSquare(3.7, 5)).toBe(false);
+      expect(board.closeToSquare(5, 3.7)).toBe(false);
+      expect(board.closeToSquare(5, 4.3)).toBe(false);
     });
   });
 });
