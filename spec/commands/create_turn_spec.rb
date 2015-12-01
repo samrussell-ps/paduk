@@ -10,8 +10,8 @@ describe CreateTurn do
       expect { CreateTurn.new(coordinate, board).call }.to change { Turn.count }.by(1)
     end
 
-    it 'returns true and creates a turn with a single stone addition at that coordinate' do
-      expect(CreateTurn.new(coordinate, board).call).to be true
+    it 'creates and returns a turn with a single stone addition at that coordinate' do
+      expect(CreateTurn.new(coordinate, board).call).to eq(Turn.last)
 
       expect(Turn.last.stone_additions.length).to eq(1)
 
@@ -33,8 +33,8 @@ describe CreateTurn do
       expect { CreateTurn.new(coordinate, board).call }.to change { Turn.count }.by(1)
     end
 
-    it 'returns true and creates a turn with no stone addition at that coordinate' do
-      expect(CreateTurn.new(coordinate, board).call).to be true
+    it 'creates and returns a turn with no stone addition at that coordinate' do
+      expect(CreateTurn.new(coordinate, board).call).to eq(Turn.last)
 
       expect(Turn.last.stone_additions.length).to eq(0)
     end
@@ -82,7 +82,7 @@ describe CreateTurn do
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(surrounding_coordinate, board).call).to be true
+      expect(CreateTurn.new(surrounding_coordinate, board).call).to eq(Turn.last)
 
       surrounding_turn = Turn.last
 
@@ -124,7 +124,7 @@ describe CreateTurn do
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(surrounding_coordinate, board).call).to be true
+      expect(CreateTurn.new(surrounding_coordinate, board).call).to eq(Turn.last)
 
       surrounding_turn = Turn.last
 
@@ -148,14 +148,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 1)
     }
 
-    it 'returns false' do
+    it 'returns nil' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(overlapping_coordinate, board).call).to be false
+      expect(CreateTurn.new(overlapping_coordinate, board).call).to be nil
     end
 
     it 'does not create a turn' do
@@ -184,14 +184,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 3)
     }
 
-    it 'returns true' do
+    it 'returns the new Turn' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(final_coordinate, board).call).to be true
+      expect(CreateTurn.new(final_coordinate, board).call).to eq(Turn.last)
     end
 
     it 'creates a turn' do
@@ -223,14 +223,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 3)
     }
 
-    it 'returns false' do
+    it 'returns nil' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(retaking_coordinate, board).call).to be false
+      expect(CreateTurn.new(retaking_coordinate, board).call).to be nil
     end
 
     it 'does not create a turn' do
@@ -261,14 +261,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 3)
     }
 
-    it 'returns true' do
+    it 'returns the Turn' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(retaking_coordinate, board).call).to be true
+      expect(CreateTurn.new(retaking_coordinate, board).call).to eq(Turn.last)
     end
 
     it 'creates a turn' do
@@ -296,14 +296,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 2)
     }
 
-    it 'returns false' do
+    it 'returns nil' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(suicide_coordinate, board).call).to be false
+      expect(CreateTurn.new(suicide_coordinate, board).call).to be nil
     end
 
     it 'does not create a turn' do
@@ -333,14 +333,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 3)
     }
 
-    it 'returns false' do
+    it 'returns nil' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(suicide_coordinate, board).call).to be false
+      expect(CreateTurn.new(suicide_coordinate, board).call).to be nil
     end
 
     it 'does not create a turn' do
@@ -373,14 +373,14 @@ describe CreateTurn do
       Coordinate.new(row: 0, column: 0)
     }
 
-    it 'returns true and removes 3 stones' do
+    it 'returns the Turn and removes 3 stones' do
       previous_coordinates.each do |coordinate|
         CreateTurn.new(coordinate, board).call
         turn = Turn.last
         ApplyTurn.new(turn, board).call
       end
 
-      expect(CreateTurn.new(final_coordinate, board).call).to be true
+      expect(CreateTurn.new(final_coordinate, board).call).to eq(Turn.last)
 
       expect(Turn.last.stone_removals.count).to eq(3)
     end

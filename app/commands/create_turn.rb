@@ -1,7 +1,5 @@
 require 'set'
 
-# TODO handle race conditions
-# probably just wants a gigantic lock/transaction around it
 class CreateTurn
   def initialize(coordinate, board)
     @coordinate = coordinate
@@ -9,11 +7,13 @@ class CreateTurn
   end
 
   def call
-    @color = next_color
+    Turn.last.with_lock do
+      @color = next_color
 
-    @errors = find_errors
+      @errors = find_errors
 
-    @errors.empty? && create_turn
+      create_turn if @errors.empty?
+    end
   end
 
   private
@@ -27,7 +27,7 @@ class CreateTurn
       create_stone_removals
     end
 
-    true
+    Turn.last
   end
 
   def pass_turn?
