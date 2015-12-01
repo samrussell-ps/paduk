@@ -14,12 +14,6 @@ class ApplyTurns
   private
 
   def turns
-    if @turn_id
-      # TODO ask turn about this, SQL should not be here
-      # the message is for Turn, not this
-      Turn.where('id <= ?', @turn_id).order(:id)
-    else
-      Turn.all.order(:id)
-    end
+    Turn.ordered(@turn_id)
   end
 end
