@@ -12,6 +12,8 @@ class ApplyTurn
     true
   end
 
+  private
+
   def apply_stone_additions
     @turn.stone_additions.each do |stone_addition|
       @board.place(stone_addition.to_coordinate, @turn.color)

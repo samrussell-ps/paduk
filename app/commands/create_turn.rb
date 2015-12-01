@@ -1,5 +1,7 @@
 require 'set'
 
+# TODO handle race conditions
+# probably just wants a gigantic lock/transaction around it
 class CreateTurn
   def initialize(coordinate, board)
     @coordinate = coordinate
@@ -53,13 +55,16 @@ class CreateTurn
   end
 
   def surrounded_coordinates
+    # not clear what @coordinate is here
     @coordinate.neighbors.select do |neighbor|
+      # TODO really difficult to understand line below
       @board.color_at(neighbor) == OtherColor.new(@color).call &&
         move_will_surround_pieces?(neighbor)
     end
   end
 
   def move_will_surround_pieces?(coordinate)
+    # TODO CalculateLiberties? name needs to match how it's used, not how it does it
     LibertiesCount.new(@board, coordinate).call == 1
   end
   
@@ -69,6 +74,7 @@ class CreateTurn
     stone_placement_errors
   end
 
+  # TODO this is checking, not creating turn
   def stone_placement_errors
     return [:stone_at_coordinate] if stone_at_coordinate?
     return [:ko_rule] if ko_rule?
@@ -81,16 +87,20 @@ class CreateTurn
     @board.color_at(@coordinate).present?
   end
 
+  #TODO violates_ko_rule? think about the message
   def ko_rule?
     stone_removals_for_neighbors.count > 0 && taking_last_piece? && replacing_last_piece?
   end
 
+  # TODO comparing array with output of calculation is weird
+  # wrap if statement, don't postfix for assignment
   def taking_last_piece?
     last_move = Turn.last.stone_additions.first.to_coordinate if Turn.last.stone_additions.present?
 
     [last_move] == stone_removals_for_neighbors.to_a
   end
 
+  # TODO comparing array with output of calculation is weird
   def replacing_last_piece?
     last_removals = Turn.last.stone_removals.map(&:to_coordinate) if Turn.last.stone_removals.present?
 
@@ -104,6 +114,8 @@ class CreateTurn
   end
 
   def empty_neighbor_squares
+    # TODO "is the color nil" doesn't make sense, should return something (black stone, white stone, empty square)
+    # ask the object about itself
     @coordinate.neighbors.select { |neighbor| @board.color_at(neighbor) == nil }
   end
 

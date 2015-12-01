@@ -1,5 +1,3 @@
-require 'set'
-
 class LibertiesCount
   def initialize(board, coordinate)
     @board = board

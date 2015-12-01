@@ -1,6 +1,8 @@
 class Board
   NUMBER_OF_ROWS = 19
   NUMBER_OF_COLUMNS = 19
+  # TODO make decorator, text printing is not core to this class
+  # debugging stuff can be in other debuggy places
   COLOR_TO_TEXT_SYMBOL = {
     'white' => 'o',
     'black' => 'x',

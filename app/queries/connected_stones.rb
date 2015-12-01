@@ -16,6 +16,7 @@ class ConnectedStones
 
   private
 
+  # TODO doesn't actually visit all coordinates
   def visit_all_coordinates
     coordinates_to_visit = []
 
