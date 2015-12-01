@@ -7,8 +7,9 @@
 <script>
   $(function () { 
     board_data = <%= JSON.generate(@board.as_json).html_safe %>;
-    //initBoard(board_data);
+
     var board = new Board();
+
     board.display();
     board_data["stones"]["black"].forEach(function(coordinate) {
       board.placeStone(coordinate, new Color("black"));
