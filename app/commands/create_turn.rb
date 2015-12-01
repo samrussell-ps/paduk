@@ -7,13 +7,11 @@ class CreateTurn
   end
 
   def call
-    Turn.last.with_lock do
-      @color = next_color
+    @color = next_color
 
-      @errors = find_errors
+    @errors = find_errors
 
-      create_turn if @errors.empty?
-    end
+    create_turn if @errors.empty?
   end
 
   private
