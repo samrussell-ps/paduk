@@ -14,10 +14,30 @@ describe Stone do
       it { is_expected.to be :white }
     end
 
-    context 'blue' do
-      subject { Stone.new(color: :blue).color }
+    context 'nil' do
+      subject { Stone.new.color }
 
       it { is_expected.to be nil }
+    end
+  end
+
+  describe '#empty_square?' do
+    context 'black' do
+      subject { Stone.new(color: :black).empty_square? }
+
+      it { is_expected.to be false }
+    end
+
+    context 'white' do
+      subject { Stone.new(color: :white).empty_square? }
+
+      it { is_expected.to be false }
+    end
+
+    context 'nil' do
+      subject { Stone.new.empty_square? }
+
+      it { is_expected.to be true }
     end
   end
 end
