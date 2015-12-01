@@ -33,10 +33,6 @@ class TurnsController < ApplicationController
     ApplyTurns.new(board: @board, turn_id: turn_id).call
   end
 
-  def turns_up_to_id(turn_id = nil)
-    turn_id ? Turn.where('id <= ?', params[:id]).order(:id) : Turn.all.order(:id)
-  end
-
   def create_and_apply_turn(row, column)
     next_piece_coordinate = Coordinate.new(row: row.to_i, column: column.to_i) if row && column
 
