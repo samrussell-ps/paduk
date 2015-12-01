@@ -10,7 +10,9 @@ class CreateTurn
     Turn.with_table_lock do
       @color = next_color
 
-      @errors = find_errors
+      valid_move = ValidMove.new(@coordinate, @board)
+      valid_move.call
+      @errors = valid_move.errors
 
       create_turn if @errors.empty?
     end
