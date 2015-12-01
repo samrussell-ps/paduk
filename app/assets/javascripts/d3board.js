@@ -46,7 +46,7 @@ Board.prototype.drawLine = function(x1, x2, y1, y2){
 Board.prototype.display = function() {
   var board = this;
 
-  this.board_display = d3.select("#board-container").append("svg").attr("height", "475px").attr("width", "475px");
+  this.board_display = d3.select("#board-container").append("svg").attr("height", this.board_height + "px").attr("width", this.board_width + "px");
 
   this.board_display.append("rect").attr({width: this.board_width, height: this.board_height, x: 0, y: 0, fill: "#E09E48"});
 
@@ -90,8 +90,8 @@ Board.prototype.placeStone = function(coordinate, color) {
 
   this.board_display.append("ellipse")
   .attr({
-    cx: x*25+12.5,
-    cy: y*25+12.5,
+    cx: (x + 0.5) * this.column_width,
+    cy: (y + 0.5) * this.row_height,
     rx: 9,
     ry: 9,
     fill: color.other().to_s()
@@ -99,8 +99,8 @@ Board.prototype.placeStone = function(coordinate, color) {
 
   this.board_display.append("ellipse")
   .attr({
-    cx: x*25+12.5,
-    cy: y*25+12.5,
+    cx: (x + 0.5) * this.column_width,
+    cy: (y + 0.5) * this.row_height,
     rx: 8,
     ry: 8,
     fill: color.to_s()
@@ -130,8 +130,8 @@ Board.prototype.closeToSquare = function(x, y) {
 };
 
 Board.prototype.mouseCoordToSquare = function(x, y) {
-  var squareX = (x - 12.5) / 25; 
-  var squareY = (y - 12.5) / 25;
+  var squareX = (x / this.column_width) - 0.5; 
+  var squareY = (y / this.row_height) - 0.5;
 
   return [squareX, squareY];
 };
