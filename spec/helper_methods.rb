@@ -17,6 +17,6 @@ def init_board(stone_locations)
 
   locations_to_coordinates(stone_locations).each do |coordinate|
     color = colors[stone_locations[coordinate.row][coordinate.column]]
-    board.place(coordinate, color)
+    board.place(coordinate, Stone.new(color: color))
   end
 end

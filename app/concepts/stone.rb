@@ -1,5 +1,5 @@
 class Stone
-  COLORS = [:black, :white]
+  COLORS = ['black', 'white']
 
   attr_reader :color
 
@@ -9,5 +9,17 @@ class Stone
 
   def empty_square?
     @color == nil
+  end
+
+  def hash
+    [@color].hash
+  end
+
+  def ==(other)
+    @color == other.color
+  end
+
+  def eql?(other)
+    self == other
   end
 end

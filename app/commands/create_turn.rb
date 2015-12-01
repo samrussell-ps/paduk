@@ -58,7 +58,7 @@ class CreateTurn
     # not clear what @coordinate is here
     @coordinate.neighbors.select do |neighbor|
       # TODO really difficult to understand line below
-      @board.color_at(neighbor) == OtherColor.new(@color).call &&
+      @board.stone_at(neighbor).color.to_s == OtherColor.new(@color).call &&
         move_will_surround_pieces?(neighbor)
     end
   end
@@ -84,7 +84,7 @@ class CreateTurn
   end
 
   def stone_at_coordinate?
-    @board.color_at(@coordinate).present?
+    @board.stone_at(@coordinate).empty_square? == false
   end
 
   #TODO violates_ko_rule? think about the message
@@ -116,7 +116,7 @@ class CreateTurn
   def empty_neighbor_squares
     # TODO "is the color nil" doesn't make sense, should return something (black stone, white stone, empty square)
     # ask the object about itself
-    @coordinate.neighbors.select { |neighbor| @board.color_at(neighbor) == nil }
+    @coordinate.neighbors.select { |neighbor| @board.stone_at(neighbor).empty_square? }
   end
 
   def would_take_last_liberty?(neighbor)
@@ -124,7 +124,7 @@ class CreateTurn
   end
 
   def same_colored_neighbors
-    @coordinate.neighbors.select { |neighbor| @board.color_at(neighbor) == @color }
+    @coordinate.neighbors.select { |neighbor| @board.stone_at(neighbor).color.to_s == @color }
   end
 
   def next_color

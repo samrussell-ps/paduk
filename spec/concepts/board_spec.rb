@@ -2,25 +2,28 @@ require 'rails_helper'
 
 describe Board do
   let(:board) { Board.new }
+  let(:empty_square_stone) { Stone.new(color: nil) }
+  let(:white_stone) { Stone.new(color: 'white') }
+  let(:black_stone) { Stone.new(color: 'black') }
 
   it 'is full of empty squares' do
     19.times.each do |row|
       19.times.each do |column|
-        expect(board.color_at(Coordinate.new(row: row, column: column))).to_not be
+        expect(board.stone_at(Coordinate.new(row: row, column: column))).to eq(empty_square_stone)
       end
     end
   end
 
   describe '#place' do
     it 'adds a color to the square' do
-      expect { board.place(Coordinate.new(row: 5, column: 7), 'white') }.to change { board.color_at(Coordinate.new(row: 5, column: 7)) }.from(nil).to('white')
+      expect { board.place(Coordinate.new(row: 5, column: 7), white_stone) }.to change { board.stone_at(Coordinate.new(row: 5, column: 7)) }.from(empty_square_stone).to(white_stone)
     end
   end
 
   describe '#remove' do
     it 'removes a color from the square' do
-      board.place(Coordinate.new(row: 5, column: 7), 'white')
-      expect { board.remove(Coordinate.new(row: 5, column: 7)) }.to change { board.color_at(Coordinate.new(row: 5, column: 7)) }.from('white').to(nil)
+      board.place(Coordinate.new(row: 5, column: 7), white_stone)
+      expect { board.remove(Coordinate.new(row: 5, column: 7)) }.to change { board.stone_at(Coordinate.new(row: 5, column: 7)) }.from(white_stone).to(empty_square_stone)
     end
   end
 
@@ -75,17 +78,17 @@ describe Board do
     }
 
     before do
-      board.place(Coordinate.new(row: 1, column: 1), 'white')
-      board.place(Coordinate.new(row: 2, column: 3), 'black')
-      board.place(Coordinate.new(row: 2, column: 4), 'black')
+      board.place(Coordinate.new(row: 1, column: 1), white_stone)
+      board.place(Coordinate.new(row: 2, column: 3), black_stone)
+      board.place(Coordinate.new(row: 2, column: 4), black_stone)
       board.remove(Coordinate.new(row: 1, column: 1))
       board.remove(Coordinate.new(row: 2, column: 3))
       board.remove(Coordinate.new(row: 2, column: 4))
 
-      board.place(Coordinate.new(row: 4, column: 1), 'white')
-      board.place(Coordinate.new(row: 4, column: 3), 'black')
-      board.place(Coordinate.new(row: 6, column: 5), 'white')
-      board.place(Coordinate.new(row: 6, column: 7), 'black')
+      board.place(Coordinate.new(row: 4, column: 1), white_stone)
+      board.place(Coordinate.new(row: 4, column: 3), black_stone)
+      board.place(Coordinate.new(row: 6, column: 5), white_stone)
+      board.place(Coordinate.new(row: 6, column: 7), black_stone)
     end
 
     it 'produces expected JSON' do

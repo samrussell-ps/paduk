@@ -73,4 +73,18 @@ describe Coordinate do
       end
     end
   end
+
+  describe 'equality' do
+    let(:coord1) { Coordinate.new(row: 3, column: 4) }
+    let(:coord2) { Coordinate.new(row: 3, column: 4) }
+    let(:coord3) { Coordinate.new(row: 3, column: 5) }
+
+    it 'compares correctly' do
+      expect(coord1).to eq(coord2)
+      expect(coord3).to_not eq(coord2)
+      expect(coord1).to_not eq(coord3)
+
+      expect([coord1, coord2].uniq).to eq([coord1])
+    end
+  end
 end

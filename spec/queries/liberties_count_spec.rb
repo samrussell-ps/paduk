@@ -1,5 +1,4 @@
 require 'rails_helper'
-
 require 'helper_methods'
 
 describe LibertiesCount do

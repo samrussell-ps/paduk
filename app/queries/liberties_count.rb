@@ -2,7 +2,7 @@ class LibertiesCount
   def initialize(board, coordinate)
     @board = board
     @coordinate = coordinate
-    @color = @board.color_at(coordinate)
+    @color = @board.stone_at(coordinate).color
   end
 
   def call
@@ -24,6 +24,6 @@ class LibertiesCount
   end
 
   def empty_square?(coordinate)
-    @board.color_at(coordinate).nil?
+    @board.stone_at(coordinate).empty_square?
   end
 end

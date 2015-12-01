@@ -13,28 +13,27 @@ class Board
     }
   end
 
-  # TODO make this return a Stone
-  def color_at(coordinate)
-    @stones[coordinate]
+  def stone_at(coordinate)
+    @stones[coordinate] || empty_square
   end
 
-  def place(coordinate, color)
-    @stones[coordinate] = color
+  def place(coordinate, stone)
+    @stones[coordinate] = stone
   end
 
   def remove(coordinate)
-    @removed_stones[color_at(coordinate)] += 1
+    @removed_stones[stone_at(coordinate).color] += 1
 
-    @stones[coordinate] = nil
+    @stones[coordinate] = empty_square
   end
 
   def as_json
-    black_stones = @stones.map do |coordinate, color|
-      coordinate.as_json if color == 'black'
+    black_stones = @stones.map do |coordinate, stone|
+      coordinate.as_json if stone.color == 'black'
     end.compact
 
-    white_stones = @stones.map do |coordinate, color|
-      coordinate.as_json if color == 'white'
+    white_stones = @stones.map do |coordinate, stone|
+      coordinate.as_json if stone.color == 'white'
     end.compact
 
     data = { 'removed_stones' => @removed_stones,
@@ -43,5 +42,11 @@ class Board
         'white' => white_stones
       }
     }
+  end
+
+  private
+
+  def empty_square
+    Stone.new(color: nil)
   end
 end
