@@ -10,7 +10,7 @@ class TurnsController < ApplicationController
   def create
     jump_to_turn
 
-    create_and_apply_piece(params[:row], params[:column])
+    create_and_apply_turn(params[:row], params[:column])
 
     redirect_to turns_url
   end
@@ -39,13 +39,11 @@ class TurnsController < ApplicationController
     turn_id ? Turn.where('id <= ?', params[:id]).order(:id) : Turn.all.order(:id)
   end
 
-  def create_and_apply_piece(row, column)
+  def create_and_apply_turn(row, column)
     next_piece_coordinate = Coordinate.new(row: row.to_i, column: column.to_i) if row && column
 
-    Turn.transaction do
-      if CreateTurn.new(next_piece_coordinate, @board).call
-        ApplyTurn.new(Turn.last, @board).call
-      end
+    if CreateTurn.new(next_piece_coordinate, @board).call
+      ApplyTurn.new(Turn.last, @board).call
     end
   end
 end

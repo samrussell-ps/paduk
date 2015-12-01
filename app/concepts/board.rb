@@ -43,13 +43,13 @@ class Board
   end
 
   def as_json
-    black_stones = @stones.select { |coordinate, color| color == 'black' }.map do |coordinate, _color|
-      coordinate.as_json
-    end
+    black_stones = @stones.map do |coordinate, color|
+      coordinate.as_json if color == 'black'
+    end.compact
 
-    white_stones = @stones.select { |coordinate, color| color == 'white' }.map do |coordinate, _color|
-      coordinate.as_json
-    end
+    white_stones = @stones.map do |coordinate, color|
+      coordinate.as_json if color == 'white'
+    end.compact
 
     data = { 'removed_stones' => @removed_stones,
       'stones' => {
