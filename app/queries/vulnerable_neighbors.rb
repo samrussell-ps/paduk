@@ -32,6 +32,6 @@ class VulnerableNeighbors
   end
 
   def move_will_fill_last_free_square?(neighbor)
-    LibertiesCount.new(@board, neighbor).call == 1
+    VulnerableGroup.new(@board, neighbor).call
   end
 end

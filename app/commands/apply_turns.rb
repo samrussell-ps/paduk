@@ -4,7 +4,6 @@ class ApplyTurns
     @turn_id = turn_id
   end
 
-  # TODO consider immutable board and make more copies
   def call
     turns.each { |turn| ApplyTurn.new(turn, @board).call }
 

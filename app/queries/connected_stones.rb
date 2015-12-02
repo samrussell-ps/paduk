@@ -9,15 +9,6 @@ class ConnectedStones
   end
 
   def call
-    visit_all_coordinates
-
-    @visited_coordinates.to_a
-  end
-
-  private
-
-  # TODO doesn't actually visit all coordinates
-  def visit_all_coordinates
     coordinates_to_visit = []
 
     coordinates_to_visit << @coordinate
@@ -27,7 +18,11 @@ class ConnectedStones
 
       coordinates_to_visit += neighbors_to_visit(next_coordinate)
     end
+
+    @visited_coordinates.to_a
   end
+
+  private
 
   def visit_coordinate(coordinate)
     @visited_coordinates << coordinate
