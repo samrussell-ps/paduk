@@ -5,7 +5,7 @@ class Turn < ActiveRecord::Base
   def self.ordered(id = nil)
     if id
       # TODO arel - shouldn't have bare "id", can't use #{table_name}
-      where('id <= ?', id).order(:created_at)
+      where(arel_table[:id].lteq(id)).order(:created_at)
     else
       all.order(:created_at)
     end
