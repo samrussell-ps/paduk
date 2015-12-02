@@ -6,7 +6,7 @@ before_script:
   - rake db:drop
   - rake db:setup
 script:
-  - rspec spec
+  - bundle exec rspec spec
 bundler_args: --without production
 addons:
   code_climate:
