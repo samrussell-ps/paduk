@@ -1,3 +1,4 @@
+# TODO LibertiesCount isn't the best name evar, find a betterer one?
 class LibertiesCount
   def initialize(board, coordinate)
     @board = board
