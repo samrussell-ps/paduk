@@ -44,8 +44,6 @@ class ValidMove
     stones_to_remove.count > 0 && would_retake_last_stone? && replacing_last_stone?
   end
 
-  # TODO comparing array with output of calculation is weird
-  # wrap if statement, don't postfix for assignment
   def would_retake_last_stone?
     return false if Turn.last.stone_additions.empty?
 
@@ -54,33 +52,30 @@ class ValidMove
     stones_to_remove.count == 1 && last_move = stones_to_remove.first
   end
 
-  # TODO comparing array with output of calculation is weird
   def replacing_last_stone?
     return false if Turn.last.stone_removals.empty?
 
     last_removals = Turn.last.stone_removals.map(&:to_coordinate)
 
-    last_removals == [@coordinate]
+    last_removals.count == 1 && last_removals.first == @coordinate
   end
 
   def violates_suicide_rule?
     stones_to_remove.none? &&
       empty_neighbor_squares.none? &&
-      same_colored_neighbors.all? { |neighbor_coordinate| would_take_last_liberty?(neighbor_coordinate) }
+      same_colored_neighbors.all? { |neighbor_coordinate| move_will_fill_last_free_square?(neighbor_coordinate) }
   end
 
   def empty_neighbor_squares
     @coordinate.neighbors.select { |neighbor_coordinate| @board.stone_at(neighbor_coordinate).empty_square? }
   end
 
-  # TODO rename
-  # TODO think about last_remaining versus previous_turn
-  def would_take_last_liberty?(neighbor)
+  def move_will_fill_last_free_square?(neighbor)
     LibertiesCount.new(@board, neighbor).call == 1
   end
 
   def same_colored_neighbors
-    @coordinate.neighbors.select { |neighbor| @board.stone_at(neighbor).color.to_s == @color }
+    @coordinate.neighbors.select { |neighbor| @board.stone_at(neighbor).color== @color }
   end
 
   def next_color

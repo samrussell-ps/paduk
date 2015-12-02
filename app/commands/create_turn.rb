@@ -10,15 +10,19 @@ class CreateTurn
     Turn.with_table_lock do
       @color = next_color
 
-      valid_move = ValidMove.new(@coordinate, @board)
-      valid_move.call
-      @errors = valid_move.errors
+      validate_move
 
       create_turn if @errors.empty?
     end
   end
 
   private
+
+  def validate_move
+    valid_move = ValidMove.new(@coordinate, @board)
+    valid_move.call
+    @errors = valid_move.errors
+  end
 
   def create_turn
     @turn = Turn.create!(color: @color)
@@ -41,12 +45,12 @@ class CreateTurn
   end
 
   def create_stone_removals
-    stone_removals_for_neighbors.each do |coordinate|
+    stone_removals.each do |coordinate|
       @turn.stone_removals.create!(row: coordinate.row, column: coordinate.column)
     end
   end
 
-  def stone_removals_for_neighbors
+  def stone_removals
     VulnerableNeighbors.new(@board, @coordinate, @color).call
   end
 
