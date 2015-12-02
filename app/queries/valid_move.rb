@@ -73,6 +73,8 @@ class ValidMove
     @coordinate.neighbors.select { |neighbor_coordinate| @board.stone_at(neighbor_coordinate).empty_square? }
   end
 
+  # TODO rename
+  # TODO think about last_remaining versus previous_turn
   def would_take_last_liberty?(neighbor)
     LibertiesCount.new(@board, neighbor).call == 1
   end
@@ -85,28 +87,7 @@ class ValidMove
     NextColor.new.call
   end
 
-  # TODO this gets reused, service?
   def stones_to_remove
-    surrounded_coordinates.flat_map do |coordinate|
-      stone_removals_for_connected_stones(coordinate)
-    end.uniq
-  end
-  
-  def stone_removals_for_connected_stones(coordinate)
-    ConnectedStones.new(@board, coordinate).call
-  end
-
-  def surrounded_coordinates
-    # not clear what @coordinate is here
-    @coordinate.neighbors.select do |neighbor|
-      # TODO really difficult to understand line below
-      @board.stone_at(neighbor).color.to_s == OtherColor.new(@color).call &&
-        move_will_surround_pieces?(neighbor)
-    end
-  end
-
-  def move_will_surround_pieces?(coordinate)
-    # TODO CalculateLiberties? name needs to match how it's used, not how it does it
-    LibertiesCount.new(@board, coordinate).call == 1
+    VulnerableNeighbors.new(@board, @coordinate, @color).call
   end
 end

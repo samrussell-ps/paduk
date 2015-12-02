@@ -47,27 +47,7 @@ class CreateTurn
   end
 
   def stone_removals_for_neighbors
-    surrounded_coordinates.flat_map do |coordinate|
-      stone_removals_for_connected_stones(coordinate)
-    end.uniq
-  end
-  
-  def stone_removals_for_connected_stones(coordinate)
-    ConnectedStones.new(@board, coordinate).call
-  end
-
-  def surrounded_coordinates
-    # not clear what @coordinate is here
-    @coordinate.neighbors.select do |neighbor|
-      # TODO really difficult to understand line below
-      @board.stone_at(neighbor).color.to_s == OtherColor.new(@color).call &&
-        move_will_surround_pieces?(neighbor)
-    end
-  end
-
-  def move_will_surround_pieces?(coordinate)
-    # TODO CalculateLiberties? name needs to match how it's used, not how it does it
-    LibertiesCount.new(@board, coordinate).call == 1
+    VulnerableNeighbors.new(@board, @coordinate, @color).call
   end
 
   def next_color
