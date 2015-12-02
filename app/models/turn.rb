@@ -4,6 +4,7 @@ class Turn < ActiveRecord::Base
 
   def self.ordered(id = nil)
     if id
+      # TODO arel - shouldn't have bare "id", can't use #{table_name}
       where('id <= ?', id).order(:created_at)
     else
       all.order(:created_at)
@@ -12,7 +13,7 @@ class Turn < ActiveRecord::Base
 
   def self.with_table_lock
     transaction do
-      ActiveRecord::Base.connection.execute('LOCK TABLE Turns')
+      ActiveRecord::Base.connection.execute("LOCK TABLE #{table_name}")
 
       yield
     end
