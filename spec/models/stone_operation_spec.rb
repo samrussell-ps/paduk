@@ -1,37 +1,37 @@
 require 'rails_helper'
 
-RSpec.describe StoneRemoval, type: :model do
+RSpec.describe StoneOperation, type: :model do
   let(:row) { 5 }
   let(:column) { 11 }
   let(:turn) { Turn.create!(color: 'white') }
 
   context 'with a row, column and turn' do
-    subject(:stone_removal) { StoneRemoval.create(row: row, column: column, turn: turn) }
+    subject(:stone_addition) { StoneOperation.create(row: row, column: column, turn: turn) }
 
     it { is_expected.to be_valid }
 
     describe '#to_coordinate' do
       let(:expected_coordinate) { Coordinate.new(row: row, column: column) }
-      subject { stone_removal.to_coordinate }
+      subject { stone_addition.to_coordinate }
 
       it { is_expected.to eq expected_coordinate }
     end
   end
 
   context 'with a row, column and no turn' do
-    subject { StoneRemoval.create(row: row, column: column, turn: nil) }
+    subject { StoneOperation.create(row: row, column: column, turn: nil) }
 
     it { is_expected.to be_invalid }
   end
 
   context 'with a row, turn and no column' do
-    subject { StoneRemoval.create(row: row, column: nil, turn: turn) }
+    subject { StoneOperation.create(row: row, column: nil, turn: turn) }
 
     it { is_expected.to be_invalid }
   end
 
   context 'with a column, turn and no row' do
-    subject { StoneRemoval.create(row: nil, column: column, turn: turn) }
+    subject { StoneOperation.create(row: nil, column: column, turn: turn) }
 
     it { is_expected.to be_invalid }
   end
@@ -41,7 +41,7 @@ RSpec.describe StoneRemoval, type: :model do
 
     it 'is invalid' do
       bad_rows.each do |bad_row|
-        expect(StoneRemoval.create(row: bad_row, column: column, turn: turn)).to be_invalid
+        expect(StoneOperation.create(row: bad_row, column: column, turn: turn)).to be_invalid
       end
     end
   end
@@ -51,7 +51,7 @@ RSpec.describe StoneRemoval, type: :model do
 
     it 'is invalid' do
       bad_columns.each do |bad_column|
-        expect(StoneRemoval.create(row: row, column: bad_column, turn: turn)).to be_invalid
+        expect(StoneOperation.create(row: row, column: bad_column, turn: turn)).to be_invalid
       end
     end
   end

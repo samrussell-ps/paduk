@@ -1,0 +1,2 @@
+class StoneOperationRemoval < StoneOperation
+end

@@ -1,0 +1,2 @@
+class StoneOperationAddition < StoneOperation
+end
