@@ -1,10 +1,9 @@
 class Turn < ActiveRecord::Base
-  has_many :stone_additions, dependent: :destroy, class_name: 'StoneOperationAddition'
-  has_many :stone_removals, dependent: :destroy, class_name: 'StoneOperationRemoval'
+  has_many :stone_additions, -> { where(kind: 'addition') }, class_name: 'StoneOperation'
+  has_many :stone_removals, -> { where(kind: 'removal') }, class_name: 'StoneOperation'
 
   def self.ordered(id = nil)
     if id
-      # TODO arel - shouldn't have bare "id", can't use #{table_name}
       where(arel_table[:id].lteq(id)).order(:created_at)
     else
       all.order(:created_at)
