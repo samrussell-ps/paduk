@@ -25,7 +25,14 @@
     board_display = d3.select("#board-container").append("svg").attr("height", board_height + "px").attr("width", board_width + "px");
 
     drawStones(data);
-    drawStones(data2);
+
+    setInterval(function() {
+      data.forEach(function(stoneData) {
+        stoneData.cy += 5;
+      });
+
+      updateStones(data);
+    }, 100);
   });
 
   function drawStones(sample_data){
@@ -42,7 +49,10 @@
 
   function updateStones(sample_data){
     board_display.selectAll("ellipse")
-      .data(sample_data)
+    .data(sample_data)
+    .transition()
+    .duration(100)
+    .ease("linear")
       .attr("cx", function(d) { return d.cx; })
       .attr("cy", function(d) { return d.cy; })
       .attr("rx", function(d) { return d.rx; })
