@@ -1,9 +1,8 @@
 language: ruby
 cache:
-  - rvm
   - bundler
 rvm:
-  - 2.2.3
+  - ruby-2.2.3
 before_script:
   - rake db:drop
   - rake db:setup
