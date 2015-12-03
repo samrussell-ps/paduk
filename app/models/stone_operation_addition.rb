@@ -1,2 +1,0 @@
-class StoneOperationAddition < StoneOperation
-end
