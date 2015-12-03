@@ -1,0 +1,52 @@
+<div id="board-container">
+</div>
+<%= form_tag(turns_path, method: :post,  style: "visiblity:hidden", id: "turn") do %>
+  <input id="row" name="row" type="hidden" />
+  <input id="column" name="column" type="hidden" />
+<% end %>
+<script>
+  var board_display;
+  var board_width = 475;
+  var board_height = 475;
+
+  var data = [
+      {cx: 5, cy: 5, rx: 5, ry: 5, fill: '#000000'},
+      {cx: 25, cy: 5, rx: 5, ry: 5, fill: '#000000'},
+      {cx: 55, cy: 5, rx: 5, ry: 5, fill: '#000000'},
+    ];
+
+  var data2 = [
+      {cx: 5, cy: 25, rx: 5, ry: 5, fill: '#ff0000'},
+      {cx: 25, cy: 45, rx: 5, ry: 5, fill: '#ff0000'},
+      {cx: 55, cy: 65, rx: 5, ry: 5, fill: '#ff0000'},
+    ];
+
+  $(function () {
+    board_display = d3.select("#board-container").append("svg").attr("height", board_height + "px").attr("width", board_width + "px");
+
+    drawStones(data);
+    drawStones(data2);
+  });
+
+  function drawStones(sample_data){
+    board_display.selectAll("ellipse")
+      .data(sample_data)
+      .enter()
+      .append("ellipse")
+      .attr("cx", function(d) { return d.cx; })
+      .attr("cy", function(d) { return d.cy; })
+      .attr("rx", function(d) { return d.rx; })
+      .attr("ry", function(d) { return d.ry; })
+      .attr("fill", function(d) { return d.fill; });
+  }
+
+  function updateStones(sample_data){
+    board_display.selectAll("ellipse")
+      .data(sample_data)
+      .attr("cx", function(d) { return d.cx; })
+      .attr("cy", function(d) { return d.cy; })
+      .attr("rx", function(d) { return d.rx; })
+      .attr("ry", function(d) { return d.ry; })
+      .attr("fill", function(d) { return d.fill; });
+  }
+</script>
