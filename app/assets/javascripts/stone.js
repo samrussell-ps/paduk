@@ -1,9 +1,9 @@
-var Stones = function() {
-  this.stones = [];
-};
-
-Stones.prototype.addStone = function(x, y, color) {
-  this.stones.push({x: x, y: y, color: color});
+var Stone = function(x, y, color) {
+  this.cx = x;
+  this.cy = y;
+  this.color = color;
+  this.vx = 0;
+  this.vy = 0;
 };
 
   var board_display;
@@ -17,6 +17,12 @@ Stones.prototype.addStone = function(x, y, color) {
   var accelerationPerFrame = acceleration * stepMilliseconds;
   var collisionThreshold = accelerationPerFrame * 1.1;
 
+  var stones = [];
+
+  stones.push(new Stone(20, 20, 'black'));
+  stones.push(new Stone(40, 20, 'black'));
+  stones.push(new Stone(60, 20, 'black'));
+
   var data = [
       {cx: 5, cy: 5, rx: 5, ry: 5, vx: 0, vy: 0, fgcolor: "#000000", bgcolor: "#ff00ff"},
       {cx: 25, cy: 5, rx: 5, ry: 5, vx: 0, vy: 0, fgcolor: "#000000", bgcolor: "#ff00ff"},
@@ -26,7 +32,9 @@ Stones.prototype.addStone = function(x, y, color) {
   function initBoard2(){
     board_display = d3.select("#board-container").append("svg").attr("height", board_height + "px").attr("width", board_width + "px");
 
-    drawStones(data);
+    $("svg").click(clickToAddStone);
+
+    drawStones(stones);
   }
 
   function animate() {
@@ -36,74 +44,88 @@ Stones.prototype.addStone = function(x, y, color) {
   function dropStones(){
     doPhysics();
 
-    updateStones(data);
+    updateStones();
+  }
+
+  function clickToAddStone(e){
+    var cx = e.pageX - $(this).offset().left; 
+    var cy = e.pageY - $(this).offset().top;
+    stones.push(new Stone(cx, cy, 'black'));
+
+    drawStones(stones);
   }
 
   function doPhysics(){
-    calculateCollisions(data);
+    calculateCollisions(stones);
 
-    data.forEach(function(stoneData) {
-      doPhysicsToStone(stoneData);
+    stones.forEach(function(stone) {
+      doPhysicsToStone(stone);
     });
   }
 
-  function doPhysicsToStone(stoneData) {
-    applyGravity(stoneData);
-    applyVelocity(stoneData);
+  function doPhysicsToStone(stone) {
+    applyGravity(stone);
+    applyVelocity(stone);
   }
 
-  function applyGravity(stoneData) {
-    if(!groundCollision(stoneData) || !atRest(stoneData)){
-      stoneData.vy += accelerationPerFrame;
+  function applyGravity(stone) {
+    if(!groundCollision(stone) || !atRest(stone)){
+      stone.vy += accelerationPerFrame;
     }
   }
 
-  function applyVelocity(stoneData) {
-    stoneData.cx += stoneData.vx;
-    stoneData.cy += stoneData.vy;
+  function applyVelocity(stone) {
+    stone.cx += stone.vx;
+    stone.cy += stone.vy;
   }
 
-  function calculateCollisions(data){
-    data.forEach(function(stoneData) {
-      calculateGroundCollision(stoneData);
+  function calculateCollisions(stones){
+    stones.forEach(function(stone) {
+      calculateGroundCollision(stone);
     });
   }
 
-  function calculateGroundCollision(stoneData){
-    if(groundCollision(stoneData)) {
-      if(movingDown(stoneData)){
-        if(atRest(stoneData)){
-          stopStone(stoneData);
+  function calculateGroundCollision(stone){
+    if(groundCollision(stone)) {
+      if(movingDown(stone)){
+        if(atRest(stone)){
+          stopStone(stone);
         } else {
-          bounceStone(stoneData);
+          bounceStone(stone);
         }
       }
     }
   }
 
-  function stopStone(stoneData){
-    stoneData.vy = 0;
+  function stopStone(stone){
+    stone.vy = 0;
   }
 
-  function bounceStone(stoneData){
-    stoneData.vy = stoneData.vy * -1 * elasticity;
+  function bounceStone(stone){
+    stone.vy = stone.vy * -1 * elasticity;
   }
 
-  function groundCollision(stoneData){
-    return stoneData.cy >= board_height - 200;
+  function groundCollision(stone){
+    return stone.cy >= board_height - 200;
   }
 
-  function movingDown(stoneData){
-    return stoneData.vy > 0;
+  function movingDown(stone){
+    return stone.vy > 0;
   }
 
-  function atRest(stoneData){
-    return Math.abs(stoneData.vy) < collisionThreshold;
+  function atRest(stone){
+    return Math.abs(stone.vy) < collisionThreshold;
   }
 
-  function drawStones(sample_data){
+  function stonesToSampleData(stones){
+    return stones.map(function(stone) {
+      return {cx: stone.cx, cy: stone.cy, rx: 5, ry: 5, fgcolor: "#000000", bgcolor: "#ff00ff"};
+    });
+  }
+
+  function drawStones(stones){
     var groups = board_display.selectAll("g")
-      .data(sample_data)
+      .data(stonesToSampleData(stones))
       .enter()
       .append("g")
       .attr("transform", function(d) { return "translate(" + d.cx + "," + d.cy + ")"; });
@@ -123,9 +145,9 @@ Stones.prototype.addStone = function(x, y, color) {
       .attr("fill", function(d) { return d.fgcolor; });
   }
 
-  function updateStones(sample_data){
+  function updateStones(){
     board_display.selectAll("g")
-    .data(sample_data)
+    .data(stonesToSampleData(stones))
     .transition()
     .duration(100)
     .ease("linear")
