@@ -5,7 +5,22 @@
   <input id="column" name="column" type="hidden" />
 <% end %>
 <script>
+  var board;
+
   $(function () {
-    initBoard2();
+    board = new Board2();
+
+    board.display();
+
+    board_data = <%= JSON.generate(@board.as_json).html_safe %>;
+
+    board_data["stones"]["black"].forEach(function(coordinate) {
+      board.addStone(new Stone(coordinate.column, coordinate.row, new Color("black")));
+    });
+
+    board_data["stones"]["white"].forEach(function(coordinate) {
+      board.addStone(new Stone(coordinate.column, coordinate.row, new Color("white")));
+    });
+
   });
 </script>
