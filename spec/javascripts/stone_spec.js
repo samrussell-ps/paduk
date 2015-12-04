@@ -48,6 +48,7 @@ describe("Board2Spec", function() {
 
       var stone = new Stone(10, 10, new Color("white"));
       board.addStone(stone);
+      board.displayStones();
 
       expect(stonesOnBoard()).toBe(1);
     });
@@ -81,6 +82,7 @@ describe("Board2Spec", function() {
 
       var stone = new Stone(initialX, initialY, new Color("white"));
       board.addStone(stone);
+      board.displayStones();
 
       expect(stonesOnBoard()).toBe(1);
       expect(stoneOnBoard(0).attr("transform")).toBe("translate(" + boardToCanvas(initialX) + "," + boardToCanvas(initialY) + ")");

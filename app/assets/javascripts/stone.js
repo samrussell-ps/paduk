@@ -1,24 +1,36 @@
 var Stone = function(x, y, color) {
-  this.cx = x * 25 + 12.5;
-  this.cy = y * 25 + 12.5;
+  this.x = x;
+  this.y = y;
   this.color = color;
   this.vx = 0;
   this.vy = 0;
 };
 
 Stone.prototype.setCoord = function(x, y){
-  this.cx = x * 25 + 12.5;
-  this.cy = y * 25 + 12.5;
+  this.x = x;
+  this.y = y;
+};
+
+var Line = function(offset, start, finish, orientation) {
+  if(orientation == "horizontal"){
+    this.x1 = start;
+    this.x2 = finish;
+    this.y1 = offset;
+    this.y2 = offset;
+  } else if(orientation == "vertical"){
+    this.x1 = offset;
+    this.x2 = offset;
+    this.y1 = start;
+    this.y2 = finish;
+  }
 };
 
 var Board2 = function() {
   this.canvas;
-  this.column_width = 25;
-  this.row_height = 25;
-  this.column_count = 19;
-  this.row_count = 19;
-  this.width = this.column_width * this.column_count;
-  this.height = this.row_height * this.row_count;
+  this.pixelsPerSquare = 25;
+  this.squareSideLength = 19;
+  this.width = this.pixelsPerSquare * this.squareSideLength;
+  this.height = this.pixelsPerSquare * this.squareSideLength;
   this.acceleration = 0.15;
   this.elasticity = 0.9;
   this.millisecondsPerSecond = 1000;
@@ -28,19 +40,32 @@ var Board2 = function() {
   this.collisionThreshold = this.accelerationPerFrame * 1.1;
 
   this.stones = [];
+  this.lines = [];
 };
 
 Board2.prototype.display = function(){
   this.canvas = d3.select("#board-container").append("svg").attr("height", this.height + "px").attr("width", this.width + "px");
 
-  //$("svg").click(clickToAddStone);
+  for(i=0; i<19; i++){
+    this.addLine(new Line(i, 0, 18, "horizontal"));
+    this.addLine(new Line(i, 0, 18, "vertical"));
+  }
 
-  //drawStones(this.stones);
+  this.displayLines();
+
+  //$("svg").click(clickToAddStone);
 };
 
 Board2.prototype.addStone = function(stone){
   this.stones.push(stone);
-  this.displayStones();
+};
+
+Board2.prototype.addLine = function(line){
+  this.lines.push(line);
+};
+
+Board2.prototype.offsetToPixels = function(offset){
+  return (offset + 0.5) * this.pixelsPerSquare;
 };
 /*
   function animate() {
@@ -125,15 +150,44 @@ Board2.prototype.addStone = function(stone){
     return Math.abs(stone.vy) < collisionThreshold;
   }
 */
-  function stonesToSampleData(stones){
-    return stones.map(function(stone) {
-      return {cx: stone.cx, cy: stone.cy, fgcolor: "#03A9F4", bgcolor: "#F44336"};
-    });
+Board2.prototype.stonesToSampleData = function(stones){
+  var board = this;
+  return stones.map(function(stone) {
+    return {cx: board.offsetToPixels(stone.x), cy: board.offsetToPixels(stone.y), fgcolor: "#03A9F4", bgcolor: "#F44336"};
+  });
+};
+
+Board2.prototype.linesToSampleData = function(lines){
+  var board = this;
+  return lines.map(function(line) {
+    return {
+      x1: board.offsetToPixels(line.x1),
+      x2: board.offsetToPixels(line.x2),
+      y1: board.offsetToPixels(line.y1),
+      y2: board.offsetToPixels(line.y2)
+    };
+  });
+};
+
+Board2.prototype.displayLines = function(){
+    var groups = this.canvas.selectAll("g.line")
+      .data(this.linesToSampleData(this.lines))
+      .enter()
+      .append("g")
+      .attr("class", "line")
+
+    groups.append("line")
+      .attr("x1", function(d) { return d.x1 })
+      .attr("x2", function(d) { return d.x2 })
+      .attr("y1", function(d) { return d.y1 })
+      .attr("y2", function(d) { return d.y2 })
+      .attr("stroke", "#000000")
+      .attr("stroke-width", 1);
   }
 
 Board2.prototype.displayStones = function(){
     var groups = this.canvas.selectAll("g.stone")
-      .data(stonesToSampleData(this.stones))
+      .data(this.stonesToSampleData(this.stones))
       .enter()
       .append("g")
       .attr("class", "stone")
@@ -156,7 +210,7 @@ Board2.prototype.displayStones = function(){
 
 Board2.prototype.updateStones = function(){
     this.canvas.selectAll("g.stone")
-    .data(stonesToSampleData(this.stones))
+    .data(this.stonesToSampleData(this.stones))
     .transition()
     .duration(100)
     .ease("linear")
