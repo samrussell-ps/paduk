@@ -25,13 +25,20 @@ var Line = function(offset, start, finish, orientation) {
   }
 };
 
+var Rectangle = function(x, y, width, height) {
+  this.x = x;
+  this.y = y;
+  this.width = width;
+  this.height = height;
+};
+
 var Board2 = function() {
   this.canvas;
   this.pixelsPerSquare = 25;
   this.squareSideLength = 19;
   this.width = this.pixelsPerSquare * this.squareSideLength;
   this.height = this.pixelsPerSquare * this.squareSideLength;
-  this.acceleration = 0.15;
+  this.acceleration = 0.002;
   this.elasticity = 0.9;
   this.millisecondsPerSecond = 1000;
   this.framesPerSecond = 50;
@@ -39,12 +46,17 @@ var Board2 = function() {
   this.accelerationPerFrame = this.acceleration * this.stepMilliseconds;
   this.collisionThreshold = this.accelerationPerFrame * 1.1;
 
-  this.stones = [];
+  this.rectangles = [];
   this.lines = [];
+  this.stones = [];
 };
 
 Board2.prototype.display = function(){
   this.canvas = d3.select("#board-container").append("svg").attr("height", this.height + "px").attr("width", this.width + "px");
+
+  this.addRectangle(new Rectangle(0, 0, 19, 19));
+
+  this.displayRectangles();
 
   for(i=0; i<19; i++){
     this.addLine(new Line(i, 0, 18, "horizontal"));
@@ -64,33 +76,26 @@ Board2.prototype.addLine = function(line){
   this.lines.push(line);
 };
 
+Board2.prototype.addRectangle = function(rectangle){
+  this.rectangles.push(rectangle);
+};
+
 Board2.prototype.offsetToPixels = function(offset){
   return (offset + 0.5) * this.pixelsPerSquare;
 };
-/*
-  function animate() {
-    setInterval(dropStones, stepMilliseconds);
-  }
 
-  function dropStones(){
-    doPhysics();
+Board2.prototype.animate = function() {
+  var board = this;
+  setInterval(function(){ board.dropStones(); }, this.stepMilliseconds);
+};
 
-    updateStones();
-  }
+Board2.prototype.dropStones = function(){
+    doPhysics(this.stones);
 
-  function clickToAddStone(e){
-    var x = e.pageX - $(this).offset().left; 
-    var y = e.pageY - $(this).offset().top;
-    var cx = x/25 - 0.5;
-    var cy = y/25 - 0.5;
-    stones.push(new Stone(cx, cy, 'black'));
+    this.updateStones();
+};
 
-    drawStones(stones);
-  }
-
-  function doPhysics(){
-    calculateCollisions(stones);
-
+  function doPhysics(stones){
     stones.forEach(function(stone) {
       doPhysicsToStone(stone);
     });
@@ -103,13 +108,15 @@ Board2.prototype.offsetToPixels = function(offset){
 
   function applyGravity(stone) {
     if(!groundCollision(stone) || !atRest(stone)){
-      stone.vy += accelerationPerFrame;
+      stone.vy += board.accelerationPerFrame;
     }
   }
 
   function applyVelocity(stone) {
-    stone.cx += stone.vx;
-    stone.cy += stone.vy;
+    if(!groundCollision(stone)){
+    stone.x += stone.vx;
+    stone.y += stone.vy;
+    }
   }
 
   function calculateCollisions(stones){
@@ -139,7 +146,7 @@ Board2.prototype.offsetToPixels = function(offset){
   }
 
   function groundCollision(stone){
-    return stone.cy >= board_height;
+    return stone.y >= board.squareSideLength - 1;
   }
 
   function movingDown(stone){
@@ -147,13 +154,13 @@ Board2.prototype.offsetToPixels = function(offset){
   }
 
   function atRest(stone){
-    return Math.abs(stone.vy) < collisionThreshold;
+    return Math.abs(stone.vy) < board.collisionThreshold;
   }
-*/
+
 Board2.prototype.stonesToSampleData = function(stones){
   var board = this;
   return stones.map(function(stone) {
-    return {cx: board.offsetToPixels(stone.x), cy: board.offsetToPixels(stone.y), fgcolor: "#03A9F4", bgcolor: "#F44336"};
+    return {cx: board.offsetToPixels(stone.x), cy: board.offsetToPixels(stone.y), fgcolor: stone.color.to_s(), bgcolor: stone.color.other().to_s()};
   });
 };
 
@@ -168,6 +175,33 @@ Board2.prototype.linesToSampleData = function(lines){
     };
   });
 };
+
+Board2.prototype.rectanglesToSampleData = function(rectangles){
+  var board = this;
+  return rectangles.map(function(rectangle) {
+    return {
+      x: rectangle.x * board.pixelsPerSquare,
+      y: rectangle.y * board.pixelsPerSquare,
+      width: rectangle.width * board.pixelsPerSquare,
+      height: rectangle.height * board.pixelsPerSquare
+    };
+  });
+};
+
+Board2.prototype.displayRectangles = function(){
+    var groups = this.canvas.selectAll("g.rectangle")
+      .data(this.rectanglesToSampleData(this.rectangles))
+      .enter()
+      .append("g")
+      .attr("class", "rectangle")
+
+    groups.append("rect")
+      .attr("x", function(d) { return d.x })
+      .attr("y", function(d) { return d.y })
+      .attr("width", function(d) { return d.width })
+      .attr("height", function(d) { return d.height })
+      .attr("fill", "#E09E48");
+  }
 
 Board2.prototype.displayLines = function(){
     var groups = this.canvas.selectAll("g.line")
@@ -203,8 +237,8 @@ Board2.prototype.displayStones = function(){
     groups.append("ellipse")
       .attr("cx", 0)
       .attr("cy", 0)
-      .attr("rx", 7)
-      .attr("ry", 7)
+      .attr("rx", 8)
+      .attr("ry", 8)
       .attr("fill", function(d) { return d.fgcolor; });
   }
 
