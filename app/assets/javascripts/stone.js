@@ -44,9 +44,9 @@ var Board2 = function() {
   this.width = this.pixelsPerSquare * this.squareSideLength;
   this.height = this.pixelsPerSquare * this.squareSideLength;
   this.acceleration = 0.002;
-  this.elasticity = 0.9;
+  this.elasticity = 0.8;
   this.millisecondsPerSecond = 1000;
-  this.framesPerSecond = 50;
+  this.framesPerSecond = 40;
   this.stepMilliseconds = this.millisecondsPerSecond / this.framesPerSecond;
   this.accelerationPerFrame = this.acceleration * this.stepMilliseconds;
   this.collisionThreshold = this.accelerationPerFrame * 1.1;
@@ -107,7 +107,7 @@ Board2.prototype.offsetToPixels = function(offset){
 
 Board2.prototype.animate = function() {
   var board = this;
-  setInterval(function(){ board.dropStones(); }, this.stepMilliseconds);
+  this.animateInterval = setInterval(function(){ board.dropStones(); }, this.stepMilliseconds);
 };
 
 Board2.prototype.onClick = function(clickee, e) {
@@ -139,72 +139,85 @@ Board2.prototype.submitTurn = function(x, y) {
 };
 
 Board2.prototype.dropStones = function(){
-    doPhysics(this.stones);
+    this.doPhysics();
 
     this.updateStones();
+
+    if(this.stones.every(function(stone) {
+      return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
+    })){
+      clearInterval(this.animateInterval);
+    }
 };
 
-  function doPhysics(stones){
-    stones.forEach(function(stone) {
-      doPhysicsToStone(stone);
-    });
-  }
+Board2.prototype.doPhysics = function(){
+  var board = this;
+  this.stones.forEach(function(stone) {
+    board.doPhysicsToStone(stone);
+  });
+}
 
-  function doPhysicsToStone(stone) {
-    applyGravity(stone);
-    applyVelocity(stone);
-  }
+Board2.prototype.doPhysicsToStone = function(stone) {
+  this.applyGravity(stone);
+  this.applyVelocity(stone);
+  this.handleGroundCollision(stone);
+}
 
-  function applyGravity(stone) {
-    if(!groundCollision(stone) || !atRest(stone)){
-      stone.vy += board.accelerationPerFrame;
+Board2.prototype.applyGravity = function(stone) {
+  stone.vy += board.accelerationPerFrame;
+};
+
+Board2.prototype.handleGroundCollision = function(stone) {
+  if(this.groundCollision(stone) && !this.movingUp(stone)){
+    if(this.atRest(stone)){
+      this.stopStone(stone);
+      this.moveStoneToGround(stone);
+    } else{
+      this.bounceStone(stone);
     }
   }
+};
 
-  function applyVelocity(stone) {
-    if(!groundCollision(stone)){
-    stone.x += stone.vx;
-    stone.y += stone.vy;
-    }
-  }
+Board2.prototype.applyVelocity = function(stone) {
+  stone.x += stone.vx;
+  stone.y += stone.vy;
+};
 
-  function calculateCollisions(stones){
-    stones.forEach(function(stone) {
-      calculateGroundCollision(stone);
-    });
-  }
+Board2.prototype.stopStone = function(stone){
+  stone.vy = 0;
+};
 
-  function calculateGroundCollision(stone){
-    if(groundCollision(stone)) {
-      if(movingDown(stone)){
-        if(atRest(stone)){
-          stopStone(stone);
-        } else {
-          bounceStone(stone);
-        }
-      }
-    }
-  }
+Board2.prototype.moveStoneToGround = function(stone){
+  stone.y = this.squareSideLength - 1;
+};
 
-  function stopStone(stone){
-    stone.vy = 0;
-  }
+Board2.prototype.bounceStone = function(stone){
+  this.pretendItBounced(stone);
+  stone.vy = stone.vy * -1 * this.elasticity;
+};
 
-  function bounceStone(stone){
-    stone.vy = stone.vy * -1 * elasticity;
-  }
+Board2.prototype.pretendItBounced = function(stone){
+  // TODO put ground depth as a variable
+  var distanceToGround = stone.y + stone.vy - (this.squareSideLength - 1);
 
-  function groundCollision(stone){
-    return stone.y >= board.squareSideLength - 1;
-  }
+  stone.y = distanceToGround * this.elasticity + this.squareSideLength - 1;
+};
 
-  function movingDown(stone){
-    return stone.vy > 0;
-  }
+Board2.prototype.groundCollision = function(stone){
+  return stone.y + stone.vy >= (this.squareSideLength - 1) * 0.99;
+};
 
-  function atRest(stone){
-    return Math.abs(stone.vy) < board.collisionThreshold;
-  }
+Board2.prototype.movingUp = function(stone){
+  return stone.vy < 0;
+};
+
+Board2.prototype.movingDown = function(stone){
+  return stone.vy > 0;
+};
+
+Board2.prototype.atRest = function(stone){
+  return Math.abs(stone.vy) < this.collisionThreshold;
+};
 
 Board2.prototype.stonesToSampleData = function(stones){
   var board = this;
@@ -323,7 +336,7 @@ Board2.prototype.updateStones = function(){
     this.canvas.selectAll("g.stone")
     .data(this.stonesToSampleData(this.stones))
     .transition()
-    .duration(100)
+    .duration(board.stepMilliseconds)
     .ease("linear")
       .attr("transform", function(d) { return "translate(" + d.cx + "," + d.cy + ")"; });
   }
