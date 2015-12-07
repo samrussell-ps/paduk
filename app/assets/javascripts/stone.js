@@ -80,6 +80,8 @@ Board2.prototype.display = function(){
   });
 
   this.displayDots();
+
+  $('svg').click(function(e) { board.onClick(this, e); } );
 };
 
 Board2.prototype.addStone = function(stone){
@@ -112,6 +114,27 @@ Board2.prototype.onClick = function(clickee, e) {
   if (this.closeToSquare(square[0], square[1])) {
     this.submitTurn(Math.round(square[0]), Math.round(square[1]));
   }
+};
+
+Board2.prototype.mouseCoordToSquare = function(x, y) {
+  var squareX = (x / this.pixelsPerSquare) - 0.5; 
+  var squareY = (y / this.pixelsPerSquare) - 0.5;
+
+  return [squareX, squareY];
+};
+
+Board2.prototype.closeToSquare = function(x, y) {
+  if ( Math.abs(x - Math.round(x)) < 0.25 && Math.abs(y - Math.round(y)) < 0.25) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+Board2.prototype.submitTurn = function(x, y) {
+  $('#turn').children('#row').val(y);
+  $('#turn').children('#column').val(x);
+  $('#turn').submit();
 };
 
 Board2.prototype.dropStones = function(){
