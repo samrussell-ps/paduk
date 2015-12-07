@@ -34,6 +34,26 @@ describe("Board2Spec", function() {
     });
   });
 
+  describe("#addLine", function(){
+    beforeEach(function(){
+      board.display();
+    });
+
+    it("adds a line", function(){
+      var linesOnBoard = function() {
+        return board.canvas.selectAll("g.line")[0].length;
+      }
+
+      expect(linesOnBoard()).toBe(38);
+
+      var line = new Line(0, 0, 10, "horizontal");
+      board.addLine(line);
+      board.displayLines();
+
+      expect(linesOnBoard()).toBe(39);
+    });
+  });
+
   describe("#addStone", function(){
     beforeEach(function(){
       board.display();

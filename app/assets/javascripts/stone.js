@@ -11,6 +11,11 @@ Stone.prototype.setCoord = function(x, y){
   this.y = y;
 };
 
+var Dot = function(x, y) {
+  this.x = x;
+  this.y = y;
+};
+
 var Line = function(offset, start, finish, orientation) {
   if(orientation == "horizontal"){
     this.x1 = start;
@@ -48,10 +53,13 @@ var Board2 = function() {
 
   this.rectangles = [];
   this.lines = [];
+  this.dots = [];
   this.stones = [];
 };
 
 Board2.prototype.display = function(){
+  var board = this;
+
   this.canvas = d3.select("#board-container").append("svg").attr("height", this.height + "px").attr("width", this.width + "px");
 
   this.addRectangle(new Rectangle(0, 0, 19, 19));
@@ -65,7 +73,13 @@ Board2.prototype.display = function(){
 
   this.displayLines();
 
-  //$("svg").click(clickToAddStone);
+  [3, 9, 15].forEach(function (x) {
+    [3, 9, 15].forEach(function (y) {
+      board.addDot(new Dot(x, y));
+    });
+  });
+
+  this.displayDots();
 };
 
 Board2.prototype.addStone = function(stone){
@@ -74,6 +88,10 @@ Board2.prototype.addStone = function(stone){
 
 Board2.prototype.addLine = function(line){
   this.lines.push(line);
+};
+
+Board2.prototype.addDot = function(dot){
+  this.dots.push(dot);
 };
 
 Board2.prototype.addRectangle = function(rectangle){
@@ -87,6 +105,13 @@ Board2.prototype.offsetToPixels = function(offset){
 Board2.prototype.animate = function() {
   var board = this;
   setInterval(function(){ board.dropStones(); }, this.stepMilliseconds);
+};
+
+Board2.prototype.onClick = function(clickee, e) {
+  var square = this.mouseCoordToSquare(e.pageX - $(clickee).offset().left, e.pageY - $(clickee).offset().top);
+  if (this.closeToSquare(square[0], square[1])) {
+    this.submitTurn(Math.round(square[0]), Math.round(square[1]));
+  }
 };
 
 Board2.prototype.dropStones = function(){
@@ -176,6 +201,18 @@ Board2.prototype.linesToSampleData = function(lines){
   });
 };
 
+Board2.prototype.dotsToSampleData = function(dots){
+  var board = this;
+  return dots.map(function(dot) {
+    return {
+      cx: board.offsetToPixels(dot.x),
+      cy: board.offsetToPixels(dot.y),
+      rx: dot.rx,
+      ry: dot.ry
+    };
+  });
+};
+
 Board2.prototype.rectanglesToSampleData = function(rectangles){
   var board = this;
   return rectangles.map(function(rectangle) {
@@ -201,7 +238,23 @@ Board2.prototype.displayRectangles = function(){
       .attr("width", function(d) { return d.width })
       .attr("height", function(d) { return d.height })
       .attr("fill", "#E09E48");
+  };
+
+Board2.prototype.displayDots = function(){
+    var groups = this.canvas.selectAll("g.dot")
+      .data(this.dotsToSampleData(this.dots))
+      .enter()
+      .append("g")
+      .attr("class", "dot")
+
+    groups.append("ellipse")
+      .attr("cx", function(d) { return d.cx })
+      .attr("cy", function(d) { return d.cy })
+      .attr("rx", 3)
+      .attr("ry", 3)
+      .attr("fill", "#000000");
   }
+
 
 Board2.prototype.displayLines = function(){
     var groups = this.canvas.selectAll("g.line")
