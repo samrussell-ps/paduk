@@ -82,6 +82,7 @@ Board2.prototype.display = function(){
   this.displayDots();
 
   $('svg').click(function(e) { board.onClick(this, e); } );
+  $('#endgame').click(function(e) { board.animate(); } );
 };
 
 Board2.prototype.addStone = function(stone){
