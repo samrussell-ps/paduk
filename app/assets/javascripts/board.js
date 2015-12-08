@@ -113,8 +113,10 @@ Board.prototype.dropStones = function(){
     this.updateStones();
 
     if(this.stones.every(function(stone) {
-      return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
+      //return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
+      return stone.x < 0 || stone.x > this.maximumStoneOffset;
     })){
+      console.log("done animating");
       clearInterval(this.animateInterval);
     }
 };
@@ -139,8 +141,8 @@ Board.prototype.doPhysicsToStone = function(stone) {
 };
 
 Board.prototype.handleWallCollisions = function(stone) {
-  this.handleLeftWallCollision(stone);
-  this.handleRightWallCollision(stone);
+  //this.handleLeftWallCollision(stone);
+  //this.handleRightWallCollision(stone);
   this.handleGroundCollision(stone);
 };
 
@@ -195,12 +197,41 @@ Board.prototype.collideStones = function(stone1, stone2){
   var xDistance = circle1[0] - circle2[0];
   var yDistance = circle1[1] - circle2[1];
 
+  var stone1stone2vector = [-xDistance, -yDistance];
+  var stone2stone1vector = [xDistance, yDistance];
+
+  var stone1VelocityMagnitude = Math.sqrt(stone1.vx*stone1.vx + stone1.vy*stone1.vy);
+  var stone2VelocityMagnitude = Math.sqrt(stone2.vx*stone2.vx + stone2.vy*stone2.vy);
+
   var totalDistance = Math.sqrt(xDistance*xDistance + yDistance*yDistance);
 
-  if(totalDistance <= this.stoneRadius){
-    // collision code isn't ready yet
-    //console.log("collision " + totalDistance);
+  if(totalDistance <= this.stoneRadius * 2){
+    var stone1VelocityCoefficient = this.dotProduct(stone1.vx, stone1.vy, stone1stone2vector[0], stone1stone2vector[1]) / (stone1VelocityMagnitude * totalDistance);
+    var stone1VelocityToGive = [stone1VelocityCoefficient * stone1.vx, stone1VelocityCoefficient * stone1.vy];
+    var stone2VelocityCoefficient = this.dotProduct(stone2.vx, stone2.vy, stone2stone1vector[0], stone2stone1vector[1]) / (stone2VelocityMagnitude * totalDistance);
+    var stone2VelocityToGive = [stone2VelocityCoefficient * stone2.vx, stone2VelocityCoefficient * stone2.vy];
+
+    console.log("coefficient 1: " + stone1VelocityCoefficient);
+    console.log("coefficient 2: " + stone2VelocityCoefficient);
+
+    // only collide if positive sum coefficients
+    
+    if(stone1VelocityCoefficient + stone2VelocityCoefficient > 0) {
+      stone1.vx -= stone1VelocityToGive[0];
+      stone2.vx += stone1VelocityToGive[0];
+      stone1.vy -= stone1VelocityToGive[1];
+      stone2.vy += stone1VelocityToGive[1];
+
+      stone2.vx -= stone2VelocityToGive[0];
+      stone1.vx += stone2VelocityToGive[0];
+      stone2.vy -= stone2VelocityToGive[1];
+      stone1.vy += stone2VelocityToGive[1];
+    }
   }
+};
+
+Board.prototype.dotProduct = function(x1, y1, x2, y2){
+  return x1*x2 + y1*y2;
 };
 
 Board.prototype.stopStone = function(stone){
