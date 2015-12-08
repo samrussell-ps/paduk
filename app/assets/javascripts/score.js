@@ -1,4 +1,3 @@
-<!--
 $(function() {
   $('input').change(function() {
     $('#black-score').text(calculateBlackScore());
@@ -13,4 +12,3 @@ function calculateBlackScore(){
 function calculateWhiteScore(){
   return parseInt($('#black-lost-stones').text()) + parseInt($('#white-territory').val());
 }
-// -->
