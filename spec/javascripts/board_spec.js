@@ -114,46 +114,83 @@ describe("BoardSpec", function() {
       expect(stoneOnBoard(0).attr("transform")).toBe("translate(" + boardToCanvas(secondX) + "," + boardToCanvas(secondY) + ")");
     });
   });
-});
 
-describe("calculateGroundCollision", function() {
-  describe("stone is still, not on ground", function() {
-    xit("does nothing to vy", function() {
-      stoneData = {cx: 5, cy: 5, rx: 5, ry: 5, vx: 0, vy: 0, fill: '#000000'};
-
-      calculateGroundCollision(stoneData);
-
-      expect(stoneData.vy).toBe(0);
+  describe("#collideStones", function(){
+    beforeEach(function(){
+      board.display();
     });
-  });
 
-  describe("stone is still, colliding with ground", function() {
-    xit("does nothing to vy", function() {
-      stoneData = {cx: 5, cy: 475, rx: 5, ry: 5, vx: 0, vy: 0, fill: '#000000'};
+    describe("In one dimension", function(){
+      it("collides the stones", function(){
+        var stone1 = new Stone(4, 4);
+        var stone2 = new Stone(4.8, 4);
 
-      calculateGroundCollision(stoneData);
+        board.addStone(stone1);
+        board.addStone(stone2);
+        stone1.vx = 1.0;
 
-      expect(stoneData.vy).toBe(0);
+        expect(stone1.vx).toBe(1.0);
+        expect(stone1.vy).toBe(0.0);
+        expect(stone2.vx).toBe(0.0);
+        expect(stone2.vy).toBe(0.0);
+        expect(board.elasticity).toBe(0.8);
+
+        board.collideStones(stone1, stone2);
+
+        expect(stone1.vx).toBe(0.0);
+        expect(stone1.vy).toBe(0.0);
+        expect(stone2.vx).toBe(0.8);
+        expect(stone2.vy).toBe(0.0);
+      });
     });
-  });
 
-  describe("stone is moving below threshold, colliding with ground", function() {
-    xit("sets vy to 0", function() {
-      stoneData = {cx: 5, cy: 475, rx: 5, ry: 5, vx: 0, vy: 0.8, fill: '#000000'};
+    describe("In two dimensions", function(){
+      it("collides the stones", function(){
+        var stone1 = new Stone(4, 4);
+        var stone2 = new Stone(4.4, 4.4);
 
-      calculateGroundCollision(stoneData);
+        board.addStone(stone1);
+        board.addStone(stone2);
+        stone1.vx = 1.0;
+        stone1.vy = 1.0;
 
-      expect(stoneData.vy).toBe(0);
+        expect(stone1.vx).toBe(1.0);
+        expect(stone1.vy).toBe(1.0);
+        expect(stone2.vx).toBe(0.0);
+        expect(stone2.vy).toBe(0.0);
+        expect(board.elasticity).toBe(0.8);
+
+        board.collideStones(stone1, stone2);
+
+        expect(stone1.vx).toBeCloseTo(0.0, 5);
+        expect(stone1.vy).toBeCloseTo(0.0, 5);
+        expect(stone2.vx).toBeCloseTo(0.8, 5);
+        expect(stone2.vy).toBeCloseTo(0.8, 5);
+      });
     });
-  });
 
-  describe("stone is moving above threshold, colliding with ground", function() {
-    xit("sets vy to -elasticity", function() {
-      stoneData = {cx: 5, cy: 475, rx: 5, ry: 5, vx: 0, vy: 3, fill: '#000000'};
+    describe("In two dimensions, non-trivial", function(){
+      it("collides the stones", function(){
+        var stone1 = new Stone(4, 4);
+        var stone2 = new Stone(4.4, 4.4);
 
-      calculateGroundCollision(stoneData);
+        board.addStone(stone1);
+        board.addStone(stone2);
+        stone1.vx = 1.0;
 
-      expect(stoneData.vy).toBe(-2.7);
+        expect(stone1.vx).toBe(1.0);
+        expect(stone1.vy).toBe(0.0);
+        expect(stone2.vx).toBe(0.0);
+        expect(stone2.vy).toBe(0.0);
+        expect(board.elasticity).toBe(0.8);
+
+        board.collideStones(stone1, stone2);
+
+        expect(stone1.vx).toBeCloseTo(0.5, 5);
+        expect(stone1.vy).toBeCloseTo(-0.5, 5);
+        expect(stone2.vx).toBeCloseTo(0.4, 5);
+        expect(stone2.vy).toBeCloseTo(0.4, 5);
+      });
     });
   });
 });
