@@ -232,15 +232,15 @@ Board.prototype.collideStones = function(stone1, stone2){
     var stone2VelocityVector = [stone2VelocityUnitVector[0] * stone2VelocityMagnitude, stone2VelocityUnitVector[1] * stone2VelocityMagnitude];
     var stone2VelocityToGive = [stone2VelocityCoefficient * stone2VelocityVector[0], stone2VelocityCoefficient * stone2VelocityVector[1]];
 
-    console.log("collision");
-    console.log("stone1VelocityCoefficient: " + stone1VelocityCoefficient);
-    console.log("stone2VelocityCoefficient: " + stone2VelocityCoefficient);
-    console.log("stone1VelocityUnitVector: " + stone1VelocityUnitVector);
-    console.log("stone2VelocityUnitVector: " + stone2VelocityUnitVector);
-    console.log("stone1VelocityToGive: " + stone1VelocityToGive);
-    console.log("stone2VelocityToGive: " + stone2VelocityToGive);
-    console.log("stone1stone2vector: " + stone1stone2vector);
-    console.log("stone2stone1vector: " + stone2stone1vector);
+    //console.log("collision");
+    //console.log("stone1VelocityCoefficient: " + stone1VelocityCoefficient);
+    //console.log("stone2VelocityCoefficient: " + stone2VelocityCoefficient);
+    //console.log("stone1VelocityUnitVector: " + stone1VelocityUnitVector);
+    //console.log("stone2VelocityUnitVector: " + stone2VelocityUnitVector);
+    //console.log("stone1VelocityToGive: " + stone1VelocityToGive);
+    //console.log("stone2VelocityToGive: " + stone2VelocityToGive);
+    //console.log("stone1stone2vector: " + stone1stone2vector);
+    //console.log("stone2stone1vector: " + stone2stone1vector);
 
     // only collide if positive sum coefficients
     
@@ -298,7 +298,7 @@ Board.prototype.pretendItBouncedRight = function(stone){
 };
 
 Board.prototype.bounceStone = function(stone){
-  this.pretendItBounced(stone);
+  //this.pretendItBounced(stone);
   stone.vy = stone.vy * -1 * this.elasticity;
 };
 
