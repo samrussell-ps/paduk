@@ -41,6 +41,7 @@ var Board2 = function() {
   this.canvas;
   this.pixelsPerSquare = 25;
   this.squareSideLength = 19;
+  this.maximumStoneOffset = this.squareSideLength - 1;
   this.stoneRadius = 9;
   this.width = this.pixelsPerSquare * this.squareSideLength;
   this.height = this.pixelsPerSquare * this.squareSideLength;
@@ -111,7 +112,7 @@ Board2.prototype.animate = function() {
   // add random x velocity to stones
   
   this.stones.forEach(function(stone){
-    var horizontalMovement = 0.05
+    var horizontalMovement = 0.01
     stone.vx = (Math.random() - 0.5) * horizontalMovement * board.stepMilliseconds;
   });
 
@@ -154,8 +155,7 @@ Board2.prototype.dropStones = function(){
     if(this.stones.every(function(stone) {
       return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
     })){
-      // TODO stop
-      //clearInterval(this.animateInterval);
+      clearInterval(this.animateInterval);
     }
 };
 
@@ -247,7 +247,7 @@ Board2.prototype.stopStone = function(stone){
 };
 
 Board2.prototype.moveStoneToGround = function(stone){
-  stone.y = this.squareSideLength - 1;
+  stone.y = this.maximumStoneOffset;
 };
 
 Board2.prototype.bounceStoneLeft = function(stone){
@@ -256,7 +256,6 @@ Board2.prototype.bounceStoneLeft = function(stone){
 };
 
 Board2.prototype.pretendItBouncedLeft = function(stone){
-  // TODO put ground depth as a variable
   var distanceToLeftWall = stone.x + stone.vx;
 
   stone.x = distanceToLeftWall / this.elasticity;
@@ -268,10 +267,9 @@ Board2.prototype.bounceStoneRight = function(stone){
 };
 
 Board2.prototype.pretendItBouncedRight = function(stone){
-  // TODO put ground depth as a variable
-  var distanceToRightWall = stone.x + stone.vx - (this.squareSideLength - 1);
+  var distanceToRightWall = stone.x + stone.vx - this.maximumStoneOffset;
 
-  stone.x = distanceToRightWall / this.elasticity + this.squareSideLength - 1;
+  stone.x = distanceToRightWall / this.elasticity + this.maximumStoneOffset;
 };
 
 Board2.prototype.bounceStone = function(stone){
@@ -280,24 +278,23 @@ Board2.prototype.bounceStone = function(stone){
 };
 
 Board2.prototype.pretendItBounced = function(stone){
-  // TODO put ground depth as a variable
-  var distanceToGround = stone.y + stone.vy - (this.squareSideLength - 1);
+  var distanceToGround = stone.y + stone.vy - this.maximumStoneOffset;
 
-  stone.y = distanceToGround / this.elasticity + this.squareSideLength - 1;
+  stone.y = distanceToGround / this.elasticity + this.maximumStoneOffset;
 };
 
 Board2.prototype.groundCollision = function(stone){
-  return stone.y + stone.vy >= (this.squareSideLength - 1) * 0.99;
+  return stone.y + stone.vy >= this.maximumStoneOffset * 0.99;
 };
 
 Board2.prototype.leftWallCollision = function(stone){
   var futureX = stone.x + stone.vx;
-  return futureX <= (this.squareSideLength - 1) * 0.01;
+  return futureX <= this.maximumStoneOffset * 0.01;
 };
 
 Board2.prototype.rightWallCollision = function(stone){
   var futureX = stone.x + stone.vx;
-  return futureX >= (this.squareSideLength - 1) * 0.99;
+  return futureX >= this.maximumStoneOffset * 0.99;
 };
 
 Board2.prototype.movingLeft = function(stone){
