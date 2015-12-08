@@ -118,7 +118,6 @@ Board.prototype.dropStones = function(){
 
     if(this.stones.every(function(stone) {
       return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
-      //return stone.x < 0 || stone.x > this.maximumStoneOffset;
     })){
       console.log("done animating");
       clearInterval(this.animateInterval);
@@ -195,41 +194,33 @@ Board.prototype.handleStoneCollisions = function() {
 };
 
 Board.prototype.collideStones = function(stone1, stone2){
-  //var circle1 = [this.offsetToPixels(stone1.x), this.offsetToPixels(stone1.y)];
-  //var circle2 = [this.offsetToPixels(stone2.x), this.offsetToPixels(stone2.y)];
-  var circle1 = [(stone1.x), (stone1.y)];
-  var circle2 = [(stone2.x), (stone2.y)];
+  var xDistance = stone1.x - stone2.x;
+  var yDistance = stone1.y - stone2.y;
 
-  var xDistance = circle1[0] - circle2[0];
-  var yDistance = circle1[1] - circle2[1];
+  var stone1CollisionVector = new Vector(stone2.x - stone1.x, stone2.y - stone1.y);
+  var stone2CollisionVector = new Vector(stone1.x - stone2.x, stone1.y - stone2.y);
 
-  var stone1stone2vector = [-xDistance, -yDistance];
-  var stone2stone1vector = [xDistance, yDistance];
-
-  var stone1VelocityMagnitude = Math.sqrt(stone1.vx*stone1.vx + stone1.vy*stone1.vy);
-  var stone2VelocityMagnitude = Math.sqrt(stone2.vx*stone2.vx + stone2.vy*stone2.vy);
-
-  var totalDistance = Math.sqrt(xDistance*xDistance + yDistance*yDistance);
+  var totalDistance = stone1CollisionVector.magnitude();
 
   if(totalDistance <= stone1.radius + stone2.radius){
     var stone1VelocityCoefficient;
-    if(stone1VelocityMagnitude != 0) {
-      stone1VelocityCoefficient = this.dotProduct(stone1.vx, stone1.vy, stone1stone2vector[0], stone1stone2vector[1]) / (stone1VelocityMagnitude * totalDistance);
+    if(stone1.velocityMagnitude() != 0) {
+      stone1VelocityCoefficient = this.dotProduct(stone1.vx, stone1.vy, stone1CollisionVector.x, stone1CollisionVector.y) / (stone1.velocityMagnitude() * totalDistance);
     } else {
       stone1VelocityCoefficient = 0;
     }
-    var stone1VelocityUnitVector = this.unitVector(stone1stone2vector[0], stone1stone2vector[1]);
-    var stone1VelocityVector = [stone1VelocityUnitVector[0] * stone1VelocityMagnitude, stone1VelocityUnitVector[1] * stone1VelocityMagnitude];
+    var stone1VelocityUnitVector = this.unitVector(stone1CollisionVector.x, stone1CollisionVector.y);
+    var stone1VelocityVector = [stone1VelocityUnitVector[0] * stone1.velocityMagnitude(), stone1VelocityUnitVector[1] * stone1.velocityMagnitude()];
     var stone1VelocityToGive = [stone1VelocityCoefficient * stone1VelocityVector[0], stone1VelocityCoefficient * stone1VelocityVector[1]];
 
     var stone2VelocityCoefficient;
-    if(stone2VelocityMagnitude != 0) {
-      stone2VelocityCoefficient = this.dotProduct(stone2.vx, stone2.vy, stone2stone1vector[0], stone2stone1vector[1]) / (stone2VelocityMagnitude * totalDistance);
+    if(stone2.velocityMagnitude() != 0) {
+      stone2VelocityCoefficient = this.dotProduct(stone2.vx, stone2.vy, stone2CollisionVector.x, stone2CollisionVector.y) / (stone2.velocityMagnitude() * totalDistance);
     } else {
       stone2VelocityCoefficient = 0;
     }
-    var stone2VelocityUnitVector = this.unitVector(stone2stone1vector[0], stone2stone1vector[1]);
-    var stone2VelocityVector = [stone2VelocityUnitVector[0] * stone2VelocityMagnitude, stone2VelocityUnitVector[1] * stone2VelocityMagnitude];
+    var stone2VelocityUnitVector = this.unitVector(stone2CollisionVector.x, stone2CollisionVector.y);
+    var stone2VelocityVector = [stone2VelocityUnitVector[0] * stone2.velocityMagnitude(), stone2VelocityUnitVector[1] * stone2.velocityMagnitude()];
     var stone2VelocityToGive = [stone2VelocityCoefficient * stone2VelocityVector[0], stone2VelocityCoefficient * stone2VelocityVector[1]];
 
     //console.log("collision");
@@ -239,8 +230,8 @@ Board.prototype.collideStones = function(stone1, stone2){
     //console.log("stone2VelocityUnitVector: " + stone2VelocityUnitVector);
     //console.log("stone1VelocityToGive: " + stone1VelocityToGive);
     //console.log("stone2VelocityToGive: " + stone2VelocityToGive);
-    //console.log("stone1stone2vector: " + stone1stone2vector);
-    //console.log("stone2stone1vector: " + stone2stone1vector);
+    //console.log("stone1CollisionVector: " + stone1CollisionVector);
+    //console.log("stone2CollisionVector: " + stone2CollisionVector);
 
     // only collide if positive sum coefficients
     

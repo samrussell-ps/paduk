@@ -11,3 +11,15 @@ Stone.prototype.setCoord = function(x, y){
   this.x = x;
   this.y = y;
 };
+
+Stone.prototype.velocityMagnitude = function(){
+  return this.velocityAsVector().magnitude();
+}
+
+Stone.prototype.positionAsVector = function(){
+  return new Vector(this.x, this.y);
+}
+
+Stone.prototype.velocityAsVector = function(){
+  return new Vector(this.vx, this.vy);
+}
