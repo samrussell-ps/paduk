@@ -37,7 +37,7 @@ var Rectangle = function(x, y, width, height) {
   this.height = height;
 };
 
-var Board2 = function() {
+var Board = function() {
   this.canvas;
   this.pixelsPerSquare = 25;
   this.squareSideLength = 19;
@@ -59,7 +59,7 @@ var Board2 = function() {
   this.stones = [];
 };
 
-Board2.prototype.display = function(){
+Board.prototype.display = function(){
   var board = this;
 
   this.canvas = d3.select("#board-container").append("svg").attr("height", this.height + "px").attr("width", this.width + "px");
@@ -87,27 +87,27 @@ Board2.prototype.display = function(){
   $('#endgame').click(function(e) { board.animate(); } );
 };
 
-Board2.prototype.addStone = function(stone){
+Board.prototype.addStone = function(stone){
   this.stones.push(stone);
 };
 
-Board2.prototype.addLine = function(line){
+Board.prototype.addLine = function(line){
   this.lines.push(line);
 };
 
-Board2.prototype.addDot = function(dot){
+Board.prototype.addDot = function(dot){
   this.dots.push(dot);
 };
 
-Board2.prototype.addRectangle = function(rectangle){
+Board.prototype.addRectangle = function(rectangle){
   this.rectangles.push(rectangle);
 };
 
-Board2.prototype.offsetToPixels = function(offset){
+Board.prototype.offsetToPixels = function(offset){
   return (offset + 0.5) * this.pixelsPerSquare;
 };
 
-Board2.prototype.animate = function() {
+Board.prototype.animate = function() {
   var board = this;
   // add random x velocity to stones
   
@@ -119,21 +119,21 @@ Board2.prototype.animate = function() {
   this.animateInterval = setInterval(function(){ board.dropStones(); }, this.stepMilliseconds);
 };
 
-Board2.prototype.onClick = function(clickee, e) {
+Board.prototype.onClick = function(clickee, e) {
   var square = this.mouseCoordToSquare(e.pageX - $(clickee).offset().left, e.pageY - $(clickee).offset().top);
   if (this.closeToSquare(square[0], square[1])) {
     this.submitTurn(Math.round(square[0]), Math.round(square[1]));
   }
 };
 
-Board2.prototype.mouseCoordToSquare = function(x, y) {
+Board.prototype.mouseCoordToSquare = function(x, y) {
   var squareX = (x / this.pixelsPerSquare) - 0.5; 
   var squareY = (y / this.pixelsPerSquare) - 0.5;
 
   return [squareX, squareY];
 };
 
-Board2.prototype.closeToSquare = function(x, y) {
+Board.prototype.closeToSquare = function(x, y) {
   if ( Math.abs(x - Math.round(x)) < 0.25 && Math.abs(y - Math.round(y)) < 0.25) {
     return true;
   } else {
@@ -141,13 +141,13 @@ Board2.prototype.closeToSquare = function(x, y) {
   }
 };
 
-Board2.prototype.submitTurn = function(x, y) {
+Board.prototype.submitTurn = function(x, y) {
   $('#turn').children('#row').val(y);
   $('#turn').children('#column').val(x);
   $('#turn').submit();
 };
 
-Board2.prototype.dropStones = function(){
+Board.prototype.dropStones = function(){
     this.doPhysics();
 
     this.updateStones();
@@ -159,7 +159,7 @@ Board2.prototype.dropStones = function(){
     }
 };
 
-Board2.prototype.doPhysics = function(){
+Board.prototype.doPhysics = function(){
   var board = this;
 
   this.stones.forEach(function(stone) {
@@ -173,22 +173,22 @@ Board2.prototype.doPhysics = function(){
   });
 }
 
-Board2.prototype.doPhysicsToStone = function(stone) {
+Board.prototype.doPhysicsToStone = function(stone) {
   this.applyGravity(stone);
   this.applyVelocity(stone);
 };
 
-Board2.prototype.handleWallCollisions = function(stone) {
+Board.prototype.handleWallCollisions = function(stone) {
   this.handleLeftWallCollision(stone);
   this.handleRightWallCollision(stone);
   this.handleGroundCollision(stone);
 };
 
-Board2.prototype.applyGravity = function(stone) {
+Board.prototype.applyGravity = function(stone) {
   stone.vy += board.accelerationPerFrame;
 };
 
-Board2.prototype.handleGroundCollision = function(stone) {
+Board.prototype.handleGroundCollision = function(stone) {
   if(this.groundCollision(stone) && !this.movingUp(stone)){
     if(this.atRest(stone)){
       this.stopStone(stone);
@@ -199,24 +199,24 @@ Board2.prototype.handleGroundCollision = function(stone) {
   }
 };
 
-Board2.prototype.handleLeftWallCollision = function(stone) {
+Board.prototype.handleLeftWallCollision = function(stone) {
   if(this.leftWallCollision(stone) && !this.movingRight(stone)){
     this.bounceStoneLeft(stone);
   }
 };
 
-Board2.prototype.handleRightWallCollision = function(stone) {
+Board.prototype.handleRightWallCollision = function(stone) {
   if(this.rightWallCollision(stone) && !this.movingLeft(stone)){
     this.bounceStoneRight(stone);
   }
 };
 
-Board2.prototype.applyVelocity = function(stone) {
+Board.prototype.applyVelocity = function(stone) {
   stone.x += stone.vx;
   stone.y += stone.vy;
 };
 
-Board2.prototype.handleStoneCollisions = function() {
+Board.prototype.handleStoneCollisions = function() {
   for(i=0; i<this.stones.length; i++){
     var stone = this.stones[i];
 
@@ -228,7 +228,7 @@ Board2.prototype.handleStoneCollisions = function() {
   }
 };
 
-Board2.prototype.collideStones = function(stone1, stone2){
+Board.prototype.collideStones = function(stone1, stone2){
   var circle1 = [board.offsetToPixels(stone1.x), board.offsetToPixels(stone1.y)];
   var circle2 = [board.offsetToPixels(stone2.x), board.offsetToPixels(stone2.y)];
 
@@ -242,89 +242,89 @@ Board2.prototype.collideStones = function(stone1, stone2){
   }
 };
 
-Board2.prototype.stopStone = function(stone){
+Board.prototype.stopStone = function(stone){
   stone.vy = 0;
 };
 
-Board2.prototype.moveStoneToGround = function(stone){
+Board.prototype.moveStoneToGround = function(stone){
   stone.y = this.maximumStoneOffset;
 };
 
-Board2.prototype.bounceStoneLeft = function(stone){
+Board.prototype.bounceStoneLeft = function(stone){
   this.pretendItBouncedLeft(stone);
   stone.vx = stone.vx * -1 * this.elasticity;
 };
 
-Board2.prototype.pretendItBouncedLeft = function(stone){
+Board.prototype.pretendItBouncedLeft = function(stone){
   var distanceToLeftWall = stone.x + stone.vx;
 
   stone.x = distanceToLeftWall / this.elasticity;
 };
 
-Board2.prototype.bounceStoneRight = function(stone){
+Board.prototype.bounceStoneRight = function(stone){
   this.pretendItBouncedRight(stone);
   stone.vx = stone.vx * -1 * this.elasticity;
 };
 
-Board2.prototype.pretendItBouncedRight = function(stone){
+Board.prototype.pretendItBouncedRight = function(stone){
   var distanceToRightWall = stone.x + stone.vx - this.maximumStoneOffset;
 
   stone.x = distanceToRightWall / this.elasticity + this.maximumStoneOffset;
 };
 
-Board2.prototype.bounceStone = function(stone){
+Board.prototype.bounceStone = function(stone){
   this.pretendItBounced(stone);
   stone.vy = stone.vy * -1 * this.elasticity;
 };
 
-Board2.prototype.pretendItBounced = function(stone){
+Board.prototype.pretendItBounced = function(stone){
   var distanceToGround = stone.y + stone.vy - this.maximumStoneOffset;
 
   stone.y = distanceToGround / this.elasticity + this.maximumStoneOffset;
 };
 
-Board2.prototype.groundCollision = function(stone){
+Board.prototype.groundCollision = function(stone){
   return stone.y + stone.vy >= this.maximumStoneOffset * 0.99;
 };
 
-Board2.prototype.leftWallCollision = function(stone){
+Board.prototype.leftWallCollision = function(stone){
   var futureX = stone.x + stone.vx;
   return futureX <= this.maximumStoneOffset * 0.01;
 };
 
-Board2.prototype.rightWallCollision = function(stone){
+Board.prototype.rightWallCollision = function(stone){
   var futureX = stone.x + stone.vx;
   return futureX >= this.maximumStoneOffset * 0.99;
 };
 
-Board2.prototype.movingLeft = function(stone){
+Board.prototype.movingLeft = function(stone){
   return stone.vx < 0;
 };
 
-Board2.prototype.movingRight = function(stone){
+Board.prototype.movingRight = function(stone){
   return stone.vx > 0;
 };
 
-Board2.prototype.movingUp = function(stone){
+Board.prototype.movingUp = function(stone){
   return stone.vy < 0;
 };
 
-Board2.prototype.movingDown = function(stone){
+Board.prototype.movingDown = function(stone){
   return stone.vy > 0;
 };
 
-Board2.prototype.atRest = function(stone){
+Board.prototype.atRest = function(stone){
   return Math.abs(stone.vy) < this.collisionThreshold;
 };
 
-Board2.prototype.stonesToSampleData = function(stones){
+Board.prototype.stonesToSampleData = function(stones){
   var board = this;
   return stones.map(function(stone) {
     return {cx: board.offsetToPixels(stone.x), cy: board.offsetToPixels(stone.y), fgcolor: stone.color.to_s(), bgcolor: stone.color.other().to_s()};
   });
 };
 
-Board2.prototype.linesToSampleData = function(lines){
+Board.prototype.linesToSampleData = function(lines){
   var board = this;
   return lines.map(function(line) {
     return {
@@ -336,7 +336,7 @@ Board2.prototype.linesToSampleData = function(lines){
   });
 };
 
-Board2.prototype.dotsToSampleData = function(dots){
+Board.prototype.dotsToSampleData = function(dots){
   var board = this;
   return dots.map(function(dot) {
     return {
@@ -348,7 +348,7 @@ Board2.prototype.dotsToSampleData = function(dots){
   });
 };
 
-Board2.prototype.rectanglesToSampleData = function(rectangles){
+Board.prototype.rectanglesToSampleData = function(rectangles){
   var board = this;
   return rectangles.map(function(rectangle) {
     return {
@@ -360,7 +360,7 @@ Board2.prototype.rectanglesToSampleData = function(rectangles){
   });
 };
 
-Board2.prototype.displayRectangles = function(){
+Board.prototype.displayRectangles = function(){
     var groups = this.canvas.selectAll("g.rectangle")
       .data(this.rectanglesToSampleData(this.rectangles))
       .enter()
@@ -375,7 +375,7 @@ Board2.prototype.displayRectangles = function(){
       .attr("fill", "#E09E48");
   };
 
-Board2.prototype.displayDots = function(){
+Board.prototype.displayDots = function(){
     var groups = this.canvas.selectAll("g.dot")
       .data(this.dotsToSampleData(this.dots))
       .enter()
@@ -391,7 +391,7 @@ Board2.prototype.displayDots = function(){
   }
 
 
-Board2.prototype.displayLines = function(){
+Board.prototype.displayLines = function(){
     var groups = this.canvas.selectAll("g.line")
       .data(this.linesToSampleData(this.lines))
       .enter()
@@ -407,7 +407,7 @@ Board2.prototype.displayLines = function(){
       .attr("stroke-width", 1);
   }
 
-Board2.prototype.displayStones = function(){
+Board.prototype.displayStones = function(){
     var groups = this.canvas.selectAll("g.stone")
       .data(this.stonesToSampleData(this.stones))
       .enter()
@@ -430,11 +430,11 @@ Board2.prototype.displayStones = function(){
       .attr("fill", function(d) { return d.fgcolor; });
   }
 
-Board2.prototype.updateStones = function(){
+Board.prototype.updateStones = function(){
     this.canvas.selectAll("g.stone")
     .data(this.stonesToSampleData(this.stones))
     .transition()
-    .duration(board.stepMilliseconds)
+    .duration(this.stepMilliseconds)
     .ease("linear")
       .attr("transform", function(d) { return "translate(" + d.cx + "," + d.cy + ")"; });
   }

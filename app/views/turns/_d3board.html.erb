@@ -5,18 +5,24 @@
   <input id="column" name="column" type="hidden" />
 <% end %>
 <script>
-  $(function () { 
-    board_data = <%= JSON.generate(@board.as_json).html_safe %>;
+  var board;
 
-    var board = new Board();
+  $(function () {
+    board = new Board();
 
     board.display();
+
+    board_data = <%= JSON.generate(@board.as_json).html_safe %>;
+
     board_data["stones"]["black"].forEach(function(coordinate) {
-      board.placeStone(coordinate, new Color("black"));
+      board.addStone(new Stone(coordinate.column, coordinate.row, new Color("black")));
     });
 
     board_data["stones"]["white"].forEach(function(coordinate) {
-      board.placeStone(coordinate, new Color("white"));
+      board.addStone(new Stone(coordinate.column, coordinate.row, new Color("white")));
     });
+
+    board.displayStones();
+
   });
 </script>

@@ -1,4 +1,4 @@
-describe("Board2Spec", function() {
+describe("BoardSpec", function() {
   var board, flushAllD3Transitions;
 
   beforeEach(function() {
@@ -11,7 +11,7 @@ describe("Board2Spec", function() {
       Date.now = now;
     };
 
-    board = new Board2();
+    board = new Board();
   });
 
   it("creates a 475x475 board", function(){

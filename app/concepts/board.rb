@@ -7,10 +7,7 @@ class Board
   def initialize
     @stones = {}
     @last_move = nil
-    @removed_stones = {
-      'black' => 0,
-      'white' => 0
-    }
+    @removed_stones = initial_zero_removed_stones
   end
 
   def stone_at(coordinate)
@@ -24,7 +21,7 @@ class Board
   def remove(coordinate)
     @removed_stones[stone_at(coordinate).color] += 1
 
-    @stones[coordinate] = empty_square
+    @stones.delete(coordinate)
   end
 
   def as_json
@@ -48,5 +45,11 @@ class Board
 
   def empty_square
     Stone.new(color: nil)
+  end
+
+  def initial_zero_removed_stones
+    Stone::COLORS.each_with_object({}) do |color, removed_stones|
+      removed_stones[color] = 0
+    end
   end
 end
