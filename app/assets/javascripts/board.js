@@ -9,7 +9,7 @@ var Board = function() {
   this.acceleration = 0.002;
   this.elasticity = 0.8;
   this.millisecondsPerSecond = 1000;
-  this.framesPerSecond = 20;
+  this.framesPerSecond = 60;
   this.stepMilliseconds = this.millisecondsPerSecond / this.framesPerSecond;
   this.accelerationPerFrame = this.acceleration * this.stepMilliseconds;
   this.collisionThreshold = this.accelerationPerFrame * 1.1;
@@ -113,8 +113,8 @@ Board.prototype.dropStones = function(){
     this.updateStones();
 
     if(this.stones.every(function(stone) {
-      //return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
-      return stone.x < 0 || stone.x > this.maximumStoneOffset;
+      return board.atRest(stone) && board.groundCollision(stone) && !board.movingUp(stone);
+      //return stone.x < 0 || stone.x > this.maximumStoneOffset;
     })){
       console.log("done animating");
       clearInterval(this.animateInterval);
@@ -141,8 +141,8 @@ Board.prototype.doPhysicsToStone = function(stone) {
 };
 
 Board.prototype.handleWallCollisions = function(stone) {
-  //this.handleLeftWallCollision(stone);
-  //this.handleRightWallCollision(stone);
+  this.handleLeftWallCollision(stone);
+  this.handleRightWallCollision(stone);
   this.handleGroundCollision(stone);
 };
 
@@ -211,21 +211,18 @@ Board.prototype.collideStones = function(stone1, stone2){
     var stone2VelocityCoefficient = this.dotProduct(stone2.vx, stone2.vy, stone2stone1vector[0], stone2stone1vector[1]) / (stone2VelocityMagnitude * totalDistance);
     var stone2VelocityToGive = [stone2VelocityCoefficient * stone2.vx, stone2VelocityCoefficient * stone2.vy];
 
-    console.log("coefficient 1: " + stone1VelocityCoefficient);
-    console.log("coefficient 2: " + stone2VelocityCoefficient);
-
     // only collide if positive sum coefficients
     
     if(stone1VelocityCoefficient + stone2VelocityCoefficient > 0) {
       stone1.vx -= stone1VelocityToGive[0];
-      stone2.vx += stone1VelocityToGive[0];
+      stone2.vx += stone1VelocityToGive[0] * this.elasticity;
       stone1.vy -= stone1VelocityToGive[1];
-      stone2.vy += stone1VelocityToGive[1];
+      stone2.vy += stone1VelocityToGive[1] * this.elasticity;
 
       stone2.vx -= stone2VelocityToGive[0];
-      stone1.vx += stone2VelocityToGive[0];
+      stone1.vx += stone2VelocityToGive[0] * this.elasticity;
       stone2.vy -= stone2VelocityToGive[1];
-      stone1.vy += stone2VelocityToGive[1];
+      stone1.vy += stone2VelocityToGive[1] * this.elasticity;
     }
   }
 };
@@ -306,7 +303,7 @@ Board.prototype.movingDown = function(stone){
 };
 
 Board.prototype.atRest = function(stone){
-  return Math.abs(stone.vy) < this.collisionThreshold;
+  return Math.sqrt(stone.vx*stone.vx + stone.vy*stone.vy) < this.collisionThreshold*2;
 };
 
 Board.prototype.stonesToSampleData = function(stones){
