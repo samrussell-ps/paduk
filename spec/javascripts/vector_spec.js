@@ -73,4 +73,15 @@ describe("Vector", function(){
       expect(vector1.dotProduct(vector2)).toBeCloseTo(0.7071, 3);
     });
   });
+
+  describe("#times()", function(){
+    it("works correctly", function(){
+      var vector = new Vector(1.2, -2.4);
+
+      var multipliedVector = vector.times(1.5);
+
+      expect(multipliedVector.x).toBeCloseTo(1.8, 3);
+      expect(multipliedVector.y).toBeCloseTo(-3.6, 3);
+    });
+  });
 });

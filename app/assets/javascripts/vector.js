@@ -14,3 +14,7 @@ Vector.prototype.toUnitVector = function(){
 Vector.prototype.dotProduct = function(otherVector){
   return this.x*otherVector.x + this.y*otherVector.y;
 };
+
+Vector.prototype.times = function(scalar){
+  return new Vector(this.x * scalar, this.y * scalar);
+}
